@@ -99,7 +99,6 @@ var script = {
   },
   methods: {
     watchRoute(to) {
-      console.log(to);
       this.handleMatchClearBehindList(to.name);
 
       if (this.isForward) {
@@ -196,7 +195,6 @@ var index = {
   install(app, router) {
     withRouter(router);
     app.component("KeepRouterView", script);
-    console.log(Number(app.version.slice(0, 1)));
 
     if (Number(app.version.slice(0, 1)) < 3) {
       Object.defineProperty(app.prototype, "$vueVersion", {

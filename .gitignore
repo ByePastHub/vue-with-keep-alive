@@ -2,6 +2,7 @@
 node_modules
 example
 src
+dist
 
 # local env files
 .env.local
