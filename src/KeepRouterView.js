@@ -1,17 +1,16 @@
-<template>
-  <router-view v-if="vueNext" v-slot="{ Component }">
-    <keep-alive :include="[...includeList]" :max="max" :exclude="exclude">
-      <component :is="Component"></component>
-    </keep-alive>
-  </router-view>
-  <keep-alive v-else :include="[...includeList]" :max="max" :exclude="exclude">
-    <router-view />
-  </keep-alive>
-</template>
+import { render2x, render3x } from './render'
+import { Vue } from './index';
 
-<script>
+let _this
 export default {
   name: "KeepRouterView",
+  render: function() {
+    if (!_this.vueNext) {
+      return render2x.call(_this)
+    } else {
+      return render3x(...arguments)
+    }
+  },
   props: {
     // 页面最大缓存数量
     max: {
@@ -36,24 +35,28 @@ export default {
   },
   data() {
     return {
-      vueNext: Number(this.$vueVersion.slice(0, 3)) >= 3,
+      vueNext: Number(Vue.version.slice(0, 3)) >= 3,
       includeList: [],
     };
   },
 
   created() {
     this.isForward = false;
+    this.reLaunch = false
     window.addEventListener("routeChange", (params) => {
       const { detail } = params;
       if (detail.type === "reLaunch") {
         this.includeList = [];
+        this.reLaunch = true
       }
       this.isForward = true;
       setTimeout(() => (this.isForward = false), 300);
     });
+    // 如果是vue2，watch 不会执行 $route
     if (!this.vueNext) {
       this.watchRoute(this.$route);
     }
+    _this = this
   },
 
   watch: {
@@ -71,9 +74,12 @@ export default {
         this.back(to.name);
       }
       this.handleMatchClearList(to);
-      if (this.includeList.length === 0) {
-        this.includeList.push(to.name);
+      if (!this.reLaunch) {
+        if (this.includeList.length === 0) {
+          this.includeList.push(to.name)
+        }
       }
+      this.reLaunch = false
     },
     // 前进
     forward(name) {
@@ -84,7 +90,12 @@ export default {
       if (this.includeList.length === this.max) {
         this.includeList.splice(0, 1);
       }
-      this.includeList.push(name);
+      // 避免 Vue 数据更新合在一次队列中，导致数据没有发生变化，reLaunch 没有清掉跳转页面的 name
+      if (Promise) {
+        Promise.resolve().then(() => this.includeList.push(name))
+      } else {
+        setTimeout(() => this.includeList.push(name), 0)
+      }
     },
     // 后退
     back(name) {
@@ -111,4 +122,3 @@ export default {
     },
   },
 };
-</script>

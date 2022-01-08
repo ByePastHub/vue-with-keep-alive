@@ -1,0 +1,4 @@
+<template>
+  <KeepRouterView />
+</template>
+

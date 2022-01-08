@@ -1,20 +1,22 @@
-import { resolveComponent, openBlock, createBlock, withCtx, KeepAlive, resolveDynamicComponent, createVNode } from 'vue';
+import { resolveComponent, openBlock, createBlock, withCtx, KeepAlive, resolveDynamicComponent } from 'vue';
 
-var withRouter = (router => {
-  const enhanceList = ["push", "replace", "reLaunch", "forward"];
-  const obj = Object.create(null);
-  const options = {
+var withRouter = (function (router) {
+  var enhanceList = ["push", "replace", "reLaunch", "forward"];
+  var obj = Object.create(null);
+  var options = {
     detail: {}
   };
-  const routeTypeEvent = new CustomEvent("routeChange", options);
+  var routeTypeEvent = new CustomEvent("routeChange", options);
 
   if (Object.prototype.hasOwnProperty.call(router, "push")) {
-    router.reLaunch = to => router.replace(to);
+    router.reLaunch = function (to) {
+      return router.replace(to);
+    };
 
-    enhanceList.forEach(key => {
+    enhanceList.forEach(function (key) {
       obj[key] = router[key];
 
-      router[key] = to => {
+      router[key] = function (to) {
         options.detail.type = key;
         window.dispatchEvent(routeTypeEvent);
         return obj[key](to);
@@ -23,24 +25,89 @@ var withRouter = (router => {
     return router;
   }
 
-  const _prototype = router.history.constructor.prototype;
+  var historyPrototype = router.history.constructor.prototype;
+  var routerPrototype = router.constructor.prototype;
 
-  _prototype.reLaunch = to => _prototype.replace(to);
+  routerPrototype.reLaunch = function (to) {
+    return routerPrototype.replace(to);
+  };
 
-  enhanceList.forEach(key => {
-    obj[key] = _prototype[key] || (() => _prototype.go(1));
+  historyPrototype.reLaunch = function (to) {
+    return historyPrototype.replace(to);
+  };
 
-    _prototype[key] = (location, onComplete, onAbort) => {
-      options.detail.type = key;
-      window.dispatchEvent(routeTypeEvent);
-      return obj[key].call(router.history, location, onComplete, onAbort);
+  var routerObj = Object.create(null);
+  enhanceList.forEach(function (key) {
+    obj[key] = historyPrototype[key] || function () {
+      return historyPrototype.go(1);
+    };
+
+    routerObj[key] = routerPrototype[key] || function () {
+      return routerPrototype.go(1);
+    };
+
+    historyPrototype[key] = function (location, onComplete, onAbort) {
+      return dispatch(obj, key, location, onComplete, onAbort);
+    };
+
+    routerPrototype[key] = function (location, onComplete, onAbort) {
+      return dispatch(obj, key, location, onComplete, onAbort);
     };
   });
+
+  function dispatch(obj, key, location, onComplete, onAbort) {
+    options.detail.type = key;
+    window.dispatchEvent(routeTypeEvent);
+    return obj[key].call(router.history, location, onComplete, onAbort);
+  }
+
   return router;
 });
 
-var script = {
+function render2x(_vm) {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _c("keep-alive", {
+    attrs: {
+      include: [].concat(_vm.includeList),
+      max: _vm.max,
+      exclude: _vm.exclude
+    }
+  }, [_c("router-view")], 1);
+}
+function render3x(_ctx, _cache, $props, $setup, $data) {
+  var _component_router_view = resolveComponent("router-view");
+
+  return openBlock(), createBlock(_component_router_view, {
+    key: 0
+  }, {
+    default: withCtx(function (_ref) {
+      var Component = _ref.Component;
+      return [(openBlock(), createBlock(KeepAlive, {
+        include: $data.includeList,
+        max: $props.max,
+        exclude: $props.exclude
+      }, [(openBlock(), createBlock(resolveDynamicComponent(Component)))], 1032, ["include", "max", "exclude"]))];
+    }),
+    _: 1
+  });
+}
+
+var _this;
+
+var KeepRouterView = {
   name: "KeepRouterView",
+  render: function render() {
+    if (!_this.vueNext) {
+      return render2x.call(_this);
+    } else {
+      return render3x.apply(void 0, arguments);
+    }
+  },
   props: {
     // 页面最大缓存数量
     max: {
@@ -50,56 +117,63 @@ var script = {
     // 字符串或正则表达式。任何名称匹配的组件都不会被缓存。
     exclude: {
       type: [Array, RegExp, String],
-      default: () => []
+      default: function _default() {
+        return [];
+      }
     },
     // 匹配到会除了当前页面的名称外，清空其他的页面名称
     matchClearList: {
       type: Array,
-      default: () => ["/"]
+      default: function _default() {
+        return ["/"];
+      }
     },
     // 如果是后退，匹配到名称时，会把后面所以的名称剔除掉
     matchClearBehindList: {
       type: Array,
-      default: () => []
+      default: function _default() {
+        return [];
+      }
     }
   },
-
-  data() {
+  data: function data() {
     return {
-      vueNext: Number(this.$vueVersion.slice(0, 3)) >= 3,
+      vueNext: Number(Vue.version.slice(0, 3)) >= 3,
       includeList: []
     };
   },
+  created: function created() {
+    var _this2 = this;
 
-  created() {
     this.isForward = false;
-    window.addEventListener("routeChange", params => {
-      const {
-        detail
-      } = params;
+    this.reLaunch = false;
+    window.addEventListener("routeChange", function (params) {
+      var detail = params.detail;
 
       if (detail.type === "reLaunch") {
-        this.includeList = [];
+        _this2.includeList = [];
+        _this2.reLaunch = true;
       }
 
-      this.isForward = true;
-      setTimeout(() => this.isForward = false, 300);
-    });
+      _this2.isForward = true;
+      setTimeout(function () {
+        return _this2.isForward = false;
+      }, 300);
+    }); // 如果是vue2，watch 不会执行 $route
 
     if (!this.vueNext) {
       this.watchRoute(this.$route);
     }
-  },
 
+    _this = this;
+  },
   watch: {
-    $route(to) {
+    $route: function $route(to) {
       this.watchRoute(to);
     }
-
   },
   methods: {
-    watchRoute(to) {
-      console.log(to);
+    watchRoute: function watchRoute(to) {
       this.handleMatchClearBehindList(to.name);
 
       if (this.isForward) {
@@ -110,111 +184,86 @@ var script = {
 
       this.handleMatchClearList(to);
 
-      if (this.includeList.length === 0) {
-        this.includeList.push(to.name);
+      if (!this.reLaunch) {
+        if (this.includeList.length === 0) {
+          this.includeList.push(to.name);
+        }
       }
-    },
 
+      this.reLaunch = false;
+    },
     // 前进
-    forward(name) {
+    forward: function forward(name) {
+      var _this3 = this;
+
       if (this.includeList.includes(name)) {
-        const index = this.includeList.indexOf(name);
+        var index = this.includeList.indexOf(name);
         this.includeList.splice(index, 1);
       }
 
       if (this.includeList.length === this.max) {
         this.includeList.splice(0, 1);
+      } // 避免 Vue 数据更新合在一次队列中，导致数据没有发生变化，reLaunch 没有清掉跳转页面的 name
+
+
+      if (Promise) {
+        Promise.resolve().then(function () {
+          return _this3.includeList.push(name);
+        });
+      } else {
+        setTimeout(function () {
+          return _this3.includeList.push(name);
+        }, 0);
       }
-
-      this.includeList.push(name);
     },
-
     // 后退
-    back(name) {
+    back: function back(name) {
       if (this.includeList.length === 1) {
         this.includeList = [name];
       }
 
-      const index = this.includeList.indexOf(name);
+      var index = this.includeList.indexOf(name);
 
       if (index >= 0) {
         this.includeList.splice(index + 1);
       }
     },
-
-    handleMatchClearBehindList(name) {
+    handleMatchClearBehindList: function handleMatchClearBehindList(name) {
       if (this.matchClearBehindList.includes(name)) {
-        const index = this.includeList.indexOf(name);
+        var index = this.includeList.indexOf(name);
         if (index < 0) return;
         this.includeList.splice(index + 1);
       }
     },
-
-    handleMatchClearList(to) {
-      const index = this.matchClearList.indexOf(to.name || to.path);
+    handleMatchClearList: function handleMatchClearList(to) {
+      var index = this.matchClearList.indexOf(to.name || to.path);
 
       if (index >= 0) {
         this.includeList = [];
       }
     }
-
   }
 };
 
-function render(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_router_view = resolveComponent("router-view");
-
-  return $data.vueNext ? (openBlock(), createBlock(_component_router_view, {
-    key: 0
-  }, {
-    default: withCtx(({
-      Component
-    }) => [(openBlock(), createBlock(KeepAlive, {
-      include: [...$data.includeList],
-      max: $props.max,
-      exclude: $props.exclude
-    }, [(openBlock(), createBlock(resolveDynamicComponent(Component)))], 1032
-    /* PROPS, DYNAMIC_SLOTS */
-    , ["include", "max", "exclude"]))]),
-    _: 1
-    /* STABLE */
-
-  })) : (openBlock(), createBlock(KeepAlive, {
-    key: 1,
-    include: [...$data.includeList],
-    max: $props.max,
-    exclude: $props.exclude
-  }, [createVNode(_component_router_view)], 1032
-  /* PROPS, DYNAMIC_SLOTS */
-  , ["include", "max", "exclude"]));
-}
-
-script.render = render;
-script.__file = "src/KeepRouterView.vue";
-
+var Vue;
 var index = {
-  install(app, router) {
+  install: function install(app, router) {
     withRouter(router);
-    app.component("KeepRouterView", script);
-    console.log(Number(app.version.slice(0, 1)));
-
-    if (Number(app.version.slice(0, 1)) < 3) {
-      Object.defineProperty(app.prototype, "$vueVersion", {
-        get() {
-          return app.version;
-        }
-
-      });
-    } else {
-      Object.defineProperty(app.config.globalProperties, "$vueVersion", {
-        get() {
-          return app.version;
-        }
-
-      });
-    }
+    app.component("KeepRouterView", KeepRouterView);
+    Vue = app; // if (Number(app.version.slice(0, 1)) < 3) {
+    //   Object.defineProperty(app.prototype, "$vueVersion", {
+    //     get() {
+    //       return app.version;
+    //     },
+    //   });
+    // } else {
+    //   Object.defineProperty(app.config.globalProperties, "$vueVersion", {
+    //     get() {
+    //       return app.version;
+    //     },
+    //   });
+    // }
   }
-
 };
 
-export { script as KeepRouterView, index as default, withRouter };
+export { KeepRouterView, Vue, index as default, withRouter };
