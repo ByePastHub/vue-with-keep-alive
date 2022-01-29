@@ -3,7 +3,7 @@ import { Vue } from './index';
 
 let _this
 export default {
-  name: "KeepRouterView",
+  name: 'KeepRouteView',
   render: function() {
     if (!_this.vueNext) {
       return render2x.call(_this)
@@ -25,13 +25,18 @@ export default {
     // 匹配到会除了当前页面的名称外，清空其他的页面名称
     matchClearList: {
       type: Array,
-      default: () => ["/"],
+      default: () => ['/'],
     },
     // 如果是后退，匹配到名称时，会把后面所以的名称剔除掉
     matchClearBehindList: {
       type: Array,
       default: () => [],
     },
+    // 全部缓存，自定义缓存(设置在 route 的 meta.keepAlive = true 则为缓存)
+    mode: {
+      type: String,
+      default: 'allKeepAlive', // allKeepAlive ｜ customizeKeepAlive
+    }
   },
   data() {
     return {
@@ -43,9 +48,9 @@ export default {
   created() {
     this.isForward = false;
     this.reLaunch = false
-    window.addEventListener("routeChange", (params) => {
+    window.addEventListener('routeChange', (params) => {
       const { detail } = params;
-      if (detail.type === "reLaunch") {
+      if (detail.type === 'reLaunch') {
         this.includeList = [];
         this.reLaunch = true
       }
@@ -53,30 +58,34 @@ export default {
       setTimeout(() => (this.isForward = false), 300);
     });
     // 如果是vue2，watch 不会执行 $route
-    if (!this.vueNext) {
-      this.watchRoute(this.$route);
-    }
+    // if (!this.vueNext) {
+    //   this.watchRoute(this.$route);
+    // }
     _this = this
   },
 
   watch: {
-    $route(to) {
-      this.watchRoute(to);
-    },
+    $route: {
+      immediate: true,
+      handler(to) {
+        this.watchRoute(to);
+      }
+    }
   },
 
   methods: {
     watchRoute(to) {
-      this.handleMatchClearBehindList(to.name);
+      const name = this.getRouteName(to)
+      this.handleMatchClearBehindList(name);
       if (this.isForward) {
-        this.forward(to.name);
+        this.forward(name);
       } else {
-        this.back(to.name);
+        this.back(name);
       }
       this.handleMatchClearList(to);
       if (!this.reLaunch) {
         if (this.includeList.length === 0) {
-          this.includeList.push(to.name)
+          this.includeList.push(name)
         }
       }
       this.reLaunch = false
@@ -120,5 +129,11 @@ export default {
         this.includeList = [];
       }
     },
+    getRouteName(to) {
+      const name = to.name
+      const keepAlive = to.meta.keepAlive
+
+      return this.mode === 'allKeepAlive' || keepAlive ? name : '__' + name
+    }
   },
 };

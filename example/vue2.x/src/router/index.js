@@ -10,11 +10,11 @@ Vue.use(VueRouter);
 
 const routes = [
   { path: "/", redirect: "/page1" },
-  { path: "/page1", name: "Page1", component: Page1 },
+  { path: "/page1", name: "Page1", component: Page1, meta: { keepAlive: true } },
   { path: "/page2", name: "Page2", component: Page2 },
-  { path: "/page3", name: "Page3", component: Page3 },
-  { path: "/page4", name: "Page4", component: Page4 },
-  { path: "/page5", name: "Page5", component: Page5 },
+  { path: "/page3", name: "Page3", component: Page3, meta: { keepAlive: true } },
+  { path: "/page4", name: "Page4", component: Page4, meta: { keepAlive: true } },
+  { path: "/page5", name: "Page5", component: Page5, meta: { keepAlive: true } },
 ];
 
 const router = new VueRouter({

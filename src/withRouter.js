@@ -1,10 +1,10 @@
 export default (router) => {
-  const enhanceList = ["push", "replace", "reLaunch", "forward"];
+  const enhanceList = ['push', 'replace', 'reLaunch', 'forward'];
   const obj = Object.create(null);
   const options = { detail: {} };
-  const routeTypeEvent = new CustomEvent("routeChange", options);
+  const routeTypeEvent = new CustomEvent('routeChange', options);
 
-  if (Object.prototype.hasOwnProperty.call(router, "push")) {
+  if (Object.prototype.hasOwnProperty.call(router, 'push')) {
     router.reLaunch = (to) => router.replace(to);
     enhanceList.forEach((key) => {
       obj[key] = router[key];

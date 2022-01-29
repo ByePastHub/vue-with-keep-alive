@@ -1,14 +1,14 @@
 import { resolveComponent, openBlock, createBlock, withCtx, KeepAlive, resolveDynamicComponent } from 'vue';
 
 var withRouter = (function (router) {
-  var enhanceList = ["push", "replace", "reLaunch", "forward"];
+  var enhanceList = ['push', 'replace', 'reLaunch', 'forward'];
   var obj = Object.create(null);
   var options = {
     detail: {}
   };
-  var routeTypeEvent = new CustomEvent("routeChange", options);
+  var routeTypeEvent = new CustomEvent('routeChange', options);
 
-  if (Object.prototype.hasOwnProperty.call(router, "push")) {
+  if (Object.prototype.hasOwnProperty.call(router, 'push')) {
     router.reLaunch = function (to) {
       return router.replace(to);
     };
@@ -64,23 +64,23 @@ var withRouter = (function (router) {
   return router;
 });
 
-function render2x(_vm) {
+function render2x() {
   var _vm = this;
 
   var _h = _vm.$createElement;
 
   var _c = _vm._self._c || _h;
 
-  return _c("keep-alive", {
+  return _c('keep-alive', {
     attrs: {
       include: [].concat(_vm.includeList),
       max: _vm.max,
       exclude: _vm.exclude
     }
-  }, [_c("router-view")], 1);
+  }, [_c('router-view')], 1);
 }
 function render3x(_ctx, _cache, $props, $setup, $data) {
-  var _component_router_view = resolveComponent("router-view");
+  var _component_router_view = resolveComponent('router-view');
 
   return openBlock(), createBlock(_component_router_view, {
     key: 0
@@ -91,7 +91,7 @@ function render3x(_ctx, _cache, $props, $setup, $data) {
         include: $data.includeList,
         max: $props.max,
         exclude: $props.exclude
-      }, [(openBlock(), createBlock(resolveDynamicComponent(Component)))], 1032, ["include", "max", "exclude"]))];
+      }, [(openBlock(), createBlock(resolveDynamicComponent(Component)))], 1032, ['include', 'max', 'exclude']))];
     }),
     _: 1
   });
@@ -100,7 +100,7 @@ function render3x(_ctx, _cache, $props, $setup, $data) {
 var _this;
 
 var KeepRouterView = {
-  name: "KeepRouterView",
+  name: 'KeepRouteView',
   render: function render() {
     if (!_this.vueNext) {
       return render2x.call(_this);
@@ -125,7 +125,7 @@ var KeepRouterView = {
     matchClearList: {
       type: Array,
       default: function _default() {
-        return ["/"];
+        return ['/'];
       }
     },
     // 如果是后退，匹配到名称时，会把后面所以的名称剔除掉
@@ -134,6 +134,12 @@ var KeepRouterView = {
       default: function _default() {
         return [];
       }
+    },
+    // 全部缓存，自定义缓存(设置在 route 的 meta.keepAlive = true 则为缓存)
+    mode: {
+      type: String,
+      default: 'allKeepAlive' // allKeepAlive ｜ customizeKeepAlive
+
     }
   },
   data: function data() {
@@ -147,10 +153,10 @@ var KeepRouterView = {
 
     this.isForward = false;
     this.reLaunch = false;
-    window.addEventListener("routeChange", function (params) {
+    window.addEventListener('routeChange', function (params) {
       var detail = params.detail;
 
-      if (detail.type === "reLaunch") {
+      if (detail.type === 'reLaunch') {
         _this2.includeList = [];
         _this2.reLaunch = true;
       }
@@ -160,33 +166,36 @@ var KeepRouterView = {
         return _this2.isForward = false;
       }, 300);
     }); // 如果是vue2，watch 不会执行 $route
-
-    if (!this.vueNext) {
-      this.watchRoute(this.$route);
-    }
+    // if (!this.vueNext) {
+    //   this.watchRoute(this.$route);
+    // }
 
     _this = this;
   },
   watch: {
-    $route: function $route(to) {
-      this.watchRoute(to);
+    $route: {
+      immediate: true,
+      handler: function handler(to) {
+        this.watchRoute(to);
+      }
     }
   },
   methods: {
     watchRoute: function watchRoute(to) {
-      this.handleMatchClearBehindList(to.name);
+      var name = this.getRouteName(to);
+      this.handleMatchClearBehindList(name);
 
       if (this.isForward) {
-        this.forward(to.name);
+        this.forward(name);
       } else {
-        this.back(to.name);
+        this.back(name);
       }
 
       this.handleMatchClearList(to);
 
       if (!this.reLaunch) {
         if (this.includeList.length === 0) {
-          this.includeList.push(to.name);
+          this.includeList.push(name);
         }
       }
 
@@ -241,6 +250,11 @@ var KeepRouterView = {
       if (index >= 0) {
         this.includeList = [];
       }
+    },
+    getRouteName: function getRouteName(to) {
+      var name = to.name;
+      var keepAlive = to.meta.keepAlive;
+      return this.mode === 'allKeepAlive' || keepAlive ? name : '__' + name;
     }
   }
 };
@@ -249,7 +263,7 @@ var Vue;
 var index = {
   install: function install(app, router) {
     withRouter(router);
-    app.component("KeepRouterView", KeepRouterView);
+    app.component('KeepRouterView', KeepRouterView);
     Vue = app;
   }
 };
