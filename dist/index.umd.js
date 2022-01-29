@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('vue')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'vue'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.index = {}, global.vue));
-})(this, (function (exports, vue) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.index = {}));
+})(this, (function (exports) { 'use strict';
 
   var withRouter = (function (router) {
     var enhanceList = ['push', 'replace', 'reLaunch', 'forward'];
@@ -11,24 +11,6 @@
       detail: {}
     };
     var routeTypeEvent = new CustomEvent('routeChange', options);
-
-    if (Object.prototype.hasOwnProperty.call(router, 'push')) {
-      router.reLaunch = function (to) {
-        return router.replace(to);
-      };
-
-      enhanceList.forEach(function (key) {
-        obj[key] = router[key];
-
-        router[key] = function (to) {
-          options.detail.type = key;
-          window.dispatchEvent(routeTypeEvent);
-          return obj[key](to);
-        };
-      });
-      return router;
-    }
-
     var historyPrototype = router.history.constructor.prototype;
     var routerPrototype = router.constructor.prototype;
 
@@ -68,7 +50,7 @@
     return router;
   });
 
-  function render2x() {
+  function render() {
     var _vm = this;
 
     var _h = _vm.$createElement;
@@ -83,35 +65,10 @@
       }
     }, [_c('router-view')], 1);
   }
-  function render3x(_ctx, _cache, $props, $setup, $data) {
-    var _component_router_view = vue.resolveComponent('router-view');
-
-    return vue.openBlock(), vue.createBlock(_component_router_view, {
-      key: 0
-    }, {
-      default: vue.withCtx(function (_ref) {
-        var Component = _ref.Component;
-        return [(vue.openBlock(), vue.createBlock(vue.KeepAlive, {
-          include: $data.includeList,
-          max: $props.max,
-          exclude: $props.exclude
-        }, [(vue.openBlock(), vue.createBlock(vue.resolveDynamicComponent(Component)))], 1032, ['include', 'max', 'exclude']))];
-      }),
-      _: 1
-    });
-  }
-
-  var _this;
 
   var KeepRouterView = {
     name: 'KeepRouteView',
-    render: function render() {
-      if (!_this.vueNext) {
-        return render2x.call(_this);
-      } else {
-        return render3x.apply(void 0, arguments);
-      }
-    },
+    render: render,
     props: {
       // 页面最大缓存数量
       max: {
@@ -148,12 +105,11 @@
     },
     data: function data() {
       return {
-        vueNext: Number(exports.Vue.version.slice(0, 3)) >= 3,
         includeList: []
       };
     },
     created: function created() {
-      var _this2 = this;
+      var _this = this;
 
       this.isForward = false;
       this.reLaunch = false;
@@ -161,20 +117,15 @@
         var detail = params.detail;
 
         if (detail.type === 'reLaunch') {
-          _this2.includeList = [];
-          _this2.reLaunch = true;
+          _this.includeList = [];
+          _this.reLaunch = true;
         }
 
-        _this2.isForward = true;
+        _this.isForward = true;
         setTimeout(function () {
-          return _this2.isForward = false;
+          return _this.isForward = false;
         }, 300);
-      }); // 如果是vue2，watch 不会执行 $route
-      // if (!this.vueNext) {
-      //   this.watchRoute(this.$route);
-      // }
-
-      _this = this;
+      });
     },
     watch: {
       $route: {
@@ -207,7 +158,7 @@
       },
       // 前进
       forward: function forward(name) {
-        var _this3 = this;
+        var _this2 = this;
 
         if (this.includeList.includes(name)) {
           var index = this.includeList.indexOf(name);
@@ -221,11 +172,11 @@
 
         if (Promise) {
           Promise.resolve().then(function () {
-            return _this3.includeList.push(name);
+            return _this2.includeList.push(name);
           });
         } else {
           setTimeout(function () {
-            return _this3.includeList.push(name);
+            return _this2.includeList.push(name);
           }, 0);
         }
       },
@@ -263,12 +214,10 @@
     }
   };
 
-  exports.Vue = void 0;
   var index = {
     install: function install(app, router) {
       withRouter(router);
       app.component('KeepRouterView', KeepRouterView);
-      exports.Vue = app;
     }
   };
 
