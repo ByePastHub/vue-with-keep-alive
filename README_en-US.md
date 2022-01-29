@@ -26,7 +26,7 @@ export default {
 </script>
 ```
 
-**componet property**
+**Component Properties**
 <table class="table table-bordered table-striped table-condensed">
   <tr>
     <td>max</td>
@@ -45,6 +45,11 @@ export default {
 	  <td>If it is backward, when the name is matched, the name behind it will be eliminated.</td>
   </tr>
 </table>
+
+#### router Object
+`push/forward`: Cache jump page component
+`replace`: Like `router.push`, the only difference is that it does not add new records to `history`
+`reLaunch`: Clear all cached components when jumping, and then cache the page component again
 
 #### Global registration component
 `KeepRouteView`
