@@ -1,8 +1,8 @@
 # vue-with-keep-alive
 
 ## language
-<a href="./README_zh-CN.md">中文</a></br>
-<a href="./README.md">English</a>
+<a href="./README.md">中文</a></br>
+<a href="./README_en-US.md">English</a>
 
 ### 安装
 ```
@@ -13,6 +13,20 @@ yarn install vue-with-keep-alive
 在线Dome: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https://byepasthub.github.io/vue-with-keep-alive/</a>
 
 ### 使用
+**注意：**
+`route`中的`name`必须跟组件导出的`name`值对应(必须要写)，否则不会缓存改组件，例如：
+```js
+const routes = [
+  { path: '/home', name: 'Home', component: Home }
+]
+
+<script>
+export default {
+  name: 'Home' // 必须跟上面的 name 对应上
+}
+</script>
+```
+
 **组件 属性**
 
 <table class="table table-bordered table-striped table-condensed">
