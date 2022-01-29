@@ -12,6 +12,19 @@ yarn install vue-with-keep-alive
 ## Get started quickly
 Dome online: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https://byepasthub.github.io/vue-with-keep-alive/</a>
 ### use
+**Notice:**
+The `name` in `route` must correspond to the `name` value exported by the component (must be written), otherwise the component will not be cached, for example:
+```js
+const routes = [
+  { path: '/home', name: 'Home', component: Home }
+]
+
+<script>
+export default {
+  name: 'Home' // Must correspond to the name above
+}
+</script>
+```
 
 **componet property**
 <table class="table table-bordered table-striped table-condensed">
