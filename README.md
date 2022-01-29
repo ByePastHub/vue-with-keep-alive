@@ -1,8 +1,8 @@
 # vue-with-keep-alive
 
 ## language
-<a href="./README_zh-CN.md">中文</a></br>
-<a href="./README.md">English</a>
+<a href="./README.md">中文</a></br>
+<a href="./README_en-US.md">English</a>
 
 ### 安装
 ```
@@ -13,8 +13,21 @@ yarn install vue-with-keep-alive
 在线Dome: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https://byepasthub.github.io/vue-with-keep-alive/</a>
 
 ### 使用
-**组件 属性**
+**注意：**
+`route`中的`name`必须跟组件导出的`name`值对应(必须要写)，否则不会缓存改组件，例如：
+```js
+const routes = [
+  { path: '/home', name: 'Home', component: Home }
+]
 
+<script>
+export default {
+  name: 'Home' // 必须跟上面的 name 对应上
+}
+</script>
+```
+
+**组件 属性**
 <table class="table table-bordered table-striped table-condensed">
   <tr>
     <td>max</td>
@@ -33,6 +46,11 @@ yarn install vue-with-keep-alive
 	  <td>如果是后退，匹配到名称时，会把后面所以的名称剔除掉。</td>
   </tr>
 </table>
+
+#### router 对象
+`push/forward`: 缓存跳转页面组件
+`replace`: 跟 `router.push` 很像，唯一的不同就是，它不会向 `history` 添加新记录
+`reLaunch`: 跳转时清除所有缓存组件，然后缓存重新缓存该页面组件
 
 #### 全局注册组件
 `KeepRouteView`

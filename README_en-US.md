@@ -12,8 +12,21 @@ yarn install vue-with-keep-alive
 ## Get started quickly
 Dome online: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https://byepasthub.github.io/vue-with-keep-alive/</a>
 ### use
+**Notice:**
+The `name` in `route` must correspond to the `name` value exported by the component (must be written), otherwise the component will not be cached, for example:
+```js
+const routes = [
+  { path: '/home', name: 'Home', component: Home }
+]
 
-**componet property**
+<script>
+export default {
+  name: 'Home' // Must correspond to the name above
+}
+</script>
+```
+
+**Component Properties**
 <table class="table table-bordered table-striped table-condensed">
   <tr>
     <td>max</td>
@@ -32,6 +45,11 @@ Dome online: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https:/
 	  <td>If it is backward, when the name is matched, the name behind it will be eliminated.</td>
   </tr>
 </table>
+
+#### router Object
+`push/forward`: Cache jump page component
+`replace`: Like `router.push`, the only difference is that it does not add new records to `history`
+`reLaunch`: Clear all cached components when jumping, and then cache the page component again
 
 #### Global registration component
 `KeepRouteView`

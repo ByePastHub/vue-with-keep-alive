@@ -85,11 +85,15 @@ export default {
       if (this.includeList.length === this.max) {
         this.includeList.splice(0, 1);
       }
-      // 避免 Vue 数据更新合在一次队列中，导致数据没有发生变化，reLaunch 没有清掉跳转页面的 name
-      if (Promise) {
-        Promise.resolve().then(() => this.includeList.push(name))
+      if (this.reLaunch) {
+        // 避免 Vue 数据更新合在一次队列中，导致数据没有发生变化，reLaunch 没有清掉跳转页面的 name
+        if (Promise) {
+          Promise.resolve().then(() => this.includeList.push(name))
+        } else {
+          setTimeout(() => this.includeList.push(name), 0)
+        }
       } else {
-        setTimeout(() => this.includeList.push(name), 0)
+        this.includeList.push(name)
       }
     },
     // 后退
