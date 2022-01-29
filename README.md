@@ -28,7 +28,6 @@ export default {
 ```
 
 **组件 属性**
-
 <table class="table table-bordered table-striped table-condensed">
   <tr>
     <td>max</td>
@@ -47,6 +46,11 @@ export default {
 	  <td>如果是后退，匹配到名称时，会把后面所以的名称剔除掉。</td>
   </tr>
 </table>
+
+#### router 对象
+`push/forward`: 缓存跳转页面组件
+`replace`: 跟 `router.push` 很像，唯一的不同就是，它不会向 `history` 添加新记录
+`reLaunch`: 跳转时清除所有缓存组件，然后缓存重新缓存该页面组件
 
 #### 全局注册组件
 `KeepRouteView`
