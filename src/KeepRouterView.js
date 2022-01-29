@@ -1,16 +1,8 @@
-import { render2x, render3x } from './render'
-import { Vue } from './index';
+import { render } from './render'
 
-let _this
 export default {
   name: 'KeepRouteView',
-  render: function() {
-    if (!_this.vueNext) {
-      return render2x.call(_this)
-    } else {
-      return render3x(...arguments)
-    }
-  },
+  render,
   props: {
     // 页面最大缓存数量
     max: {
@@ -40,7 +32,6 @@ export default {
   },
   data() {
     return {
-      vueNext: Number(Vue.version.slice(0, 3)) >= 3,
       includeList: [],
     };
   },
@@ -57,11 +48,6 @@ export default {
       this.isForward = true;
       setTimeout(() => (this.isForward = false), 300);
     });
-    // 如果是vue2，watch 不会执行 $route
-    // if (!this.vueNext) {
-    //   this.watchRoute(this.$route);
-    // }
-    _this = this
   },
 
   watch: {
