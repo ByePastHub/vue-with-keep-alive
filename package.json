@@ -13,9 +13,12 @@
   },
   "keywords": [
     "vue",
+    "vue2.x",
+    "vue3.x",
     "keep",
     "keepAlive",
-    "router"
+    "keep-alive",
+    "with-keep-alive"
   ],
   "author": "ByePast",
   "license": "MIT",
