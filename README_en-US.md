@@ -10,8 +10,11 @@ yarn install vue-with-keep-alive
 ```
 
 ## Get started quickly
-Dome online: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https://byepasthub.github.io/vue-with-keep-alive/</a>
+Online Dome: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https://byepasthub.github.io/vue-with-keep-alive/</a>
 ### use
+`vue2.x` version install `npm install vue-with-keep-alive@2.x`
+`vue3.x` version install `npm install vue-with-keep-alive`
+
 **Notice:**
 The `name` in `route` must correspond to the `name` value exported by the component (must be written), otherwise the component will not be cached, for example:
 ```js
@@ -28,6 +31,10 @@ export default {
 
 **Component Properties**
 <table class="table table-bordered table-striped table-condensed">
+  <tr>
+    <td>mode</td>
+	  <td>Mode: all cache (default) `allKeepAlive`, custom cache `customizeKeepAlive`</td>
+  </tr>
   <tr>
     <td>max</td>
 	  <td>Maximum number of pages cached</td>
@@ -47,9 +54,9 @@ export default {
 </table>
 
 #### router Object
-`push/forward`: Cache jump page component
-`replace`: Like `router.push`, the only difference is that it does not add new records to `history`
-`reLaunch`: Clear all cached components when jumping, and then cache the page component again
+`push/forward`: Cache jump page component</br>
+`replace`: Like `router.push`, the only difference is that it does not add new records to `history`</br>
+`reLaunch`: Clear all cached components when jumping, and then cache the page component again</br>
 
 #### Global registration component
 `KeepRouteView`

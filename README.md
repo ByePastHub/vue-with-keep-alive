@@ -13,6 +13,9 @@ yarn install vue-with-keep-alive
 在线Dome: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https://byepasthub.github.io/vue-with-keep-alive/</a>
 
 ### 使用
+`vue2.x`版本安装`npm install vue-with-keep-alive@2.x`
+`vue3.x`版本安装`npm install vue-with-keep-alive`
+
 **注意：**
 `route`中的`name`必须跟组件导出的`name`值对应(必须要写)，否则不会缓存改组件，例如：
 ```js
@@ -29,6 +32,10 @@ export default {
 
 **组件 属性**
 <table class="table table-bordered table-striped table-condensed">
+  <tr>
+    <td>mode</td>
+	  <td>模式：全部缓存(默认)`allKeepAlive`，自定义缓存`customizeKeepAlive`</td>
+  </tr>
   <tr>
     <td>max</td>
 	  <td>页面最大缓存数量</td>
@@ -48,9 +55,9 @@ export default {
 </table>
 
 #### router 对象
-`push/forward`: 缓存跳转页面组件
-`replace`: 跟 `router.push` 很像，唯一的不同就是，它不会向 `history` 添加新记录
-`reLaunch`: 跳转时清除所有缓存组件，然后缓存重新缓存该页面组件
+`push/forward`: 缓存跳转页面组件</br>
+`replace`: 跟 `router.push` 很像，唯一的不同就是，它不会向 `history` 添加新记录</br>
+`reLaunch`: 跳转时清除所有缓存组件，然后缓存重新缓存该页面组件</br>
 
 #### 全局注册组件
 `KeepRouteView`
@@ -71,6 +78,6 @@ app.mount("#app");
 **App.vue**
 ```vue
 <template>
-  <keep-router-view />
+  <keep-router-view mode="allKeepAlive" />
 </template>
 ```
