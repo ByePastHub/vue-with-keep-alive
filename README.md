@@ -1,7 +1,7 @@
 # vue-with-keep-alive
 
 ## 介绍
->这是`keep-alive`增强版，哪里需要缓存，把`keep-alive`组件使用`keep-router-view`来替换。就可以帮助你实现前进刷新，返回时之前的页面还处于激活的状态。可以像`app`一样的体验。
+>`vue-with-keep-alive`可以帮助你实现前进刷新，返回时之前的页面还处于激活的状态，可以像`app`一样的体验。哪里需要缓存，把`router-view`组件使用`keep-router-view`来替换。
 
 ## language
 <a href="./README.md">中文</a></br>  

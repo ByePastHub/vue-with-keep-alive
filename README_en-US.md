@@ -1,7 +1,7 @@
 # vue-with-keep-alive
 
 ## introduce
->This is an enhanced version of `keep-alive`, where cache is needed, replace the `keep-alive` component with `keep-router-view`. It can help you achieve forward refresh, and the previous page is still active when you return. It can be experienced like an `app`.
+>`vue-with-keep-alive` can help you achieve forward refresh, the previous page is still active when you return, and you can experience the same as `app`. Where caching is needed, replace the `router-view` component with `keep-router-view`.
 
 ## language
 <a href="./README.md">中文</a></br>  
