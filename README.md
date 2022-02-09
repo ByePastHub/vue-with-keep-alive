@@ -1,7 +1,7 @@
 # vue-with-keep-alive
 
 ## language
-<a href="./README.md">中文</a></br>
+<a href="./README.md">中文</a></br>  
 <a href="./README_en-US.md">English</a>
 
 ### 安装
@@ -13,7 +13,7 @@ yarn install vue-with-keep-alive
 在线Dome: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https://byepasthub.github.io/vue-with-keep-alive/</a>
 
 ### 使用
-`vue2.x`版本安装`npm install vue-with-keep-alive@2.x`
+`vue2.x`版本安装`npm install vue-with-keep-alive@2.x`</br>  
 `vue3.x`版本安装`npm install vue-with-keep-alive`
 
 **注意：**
@@ -55,9 +55,10 @@ export default {
 </table>
 
 #### router 对象
-`push/forward`: 缓存跳转页面组件</br>
-`replace`: 跟 `router.push` 很像，唯一的不同就是，它不会向 `history` 添加新记录</br>
-`reLaunch`: 跳转时清除所有缓存组件，然后缓存重新缓存该页面组件</br>
+`push/replace/forward`: 缓存跳转页面组件</br>  
+`replace`: 跟 `router.push` 很像，唯一的不同就是，它不会向 `history` 添加新记录</br>  
+`reLaunch`: 跳转时清除所有缓存组件，然后缓存重新缓存该页面组件</br>  
+其他(包括系统返回)的都属于后退，路由发生变化会销毁页面组件</br>
 
 #### 全局注册组件
 `KeepRouteView`
