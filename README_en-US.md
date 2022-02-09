@@ -1,7 +1,7 @@
 # vue-with-keep-alive
 
 ## language
-<a href="./README.md">中文</a>
+<a href="./README.md">中文</a></br>  
 <a href="./README_en-US.md">English</a></br>
 
 ### Install
@@ -12,7 +12,7 @@ yarn install vue-with-keep-alive
 ## Get started quickly
 Online Dome: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https://byepasthub.github.io/vue-with-keep-alive/</a>
 ### use
-`vue2.x` version install `npm install vue-with-keep-alive@2.x`
+`vue2.x` version install `npm install vue-with-keep-alive@2.x`</br>  
 `vue3.x` version install `npm install vue-with-keep-alive`
 
 **Notice:**
@@ -54,9 +54,10 @@ export default {
 </table>
 
 #### router Object
-`push/forward`: Cache jump page component</br>
-`replace`: Like `router.push`, the only difference is that it does not add new records to `history`</br>
-`reLaunch`: Clear all cached components when jumping, and then cache the page component again</br>
+`push/replace/forward`: Cache jump page component</br>  
+`replace`: Like `router.push`, the only difference is that it does not add new records to `history`</br>  
+`reLaunch`: Clear all cached components when jumping, and then cache the page component again</br>  
+Others (including system return) are all backwards, and the page component will be destroyed when the route changes</br>
 
 #### Global registration component
 `KeepRouteView`
