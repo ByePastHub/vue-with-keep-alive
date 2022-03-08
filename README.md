@@ -1,5 +1,8 @@
 # vue-with-keep-alive
 
+## 介绍
+>`vue-with-keep-alive`可以帮助你实现前进刷新，返回时之前的页面还处于激活的状态，可以像`app`一样的体验。哪里需要缓存，把`router-view`组件使用`keep-router-view`来替换。
+
 ## language
 <a href="./README.md">中文</a></br>  
 <a href="./README_en-US.md">English</a>
@@ -13,28 +16,14 @@ yarn install vue-with-keep-alive
 在线Dome: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https://byepasthub.github.io/vue-with-keep-alive/</a>
 
 ### 使用
-`vue2.x`版本安装`npm install vue-with-keep-alive@2.x`</br>  
+`vue2.x`版本安装`npm install vue-with-keep-alive@2.x`</br>
 `vue3.x`版本安装`npm install vue-with-keep-alive`
-
-**注意：**
-`route`中的`name`必须跟组件导出的`name`值对应(必须要写)，否则不会缓存改组件，例如：
-```js
-const routes = [
-  { path: '/home', name: 'Home', component: Home }
-]
-
-<script>
-export default {
-  name: 'Home' // 必须跟上面的 name 对应上
-}
-</script>
-```
 
 **组件 属性**
 <table class="table table-bordered table-striped table-condensed">
   <tr>
     <td>mode</td>
-	  <td>模式：全部缓存(默认)`allKeepAlive`，自定义缓存`customizeKeepAlive`</td>
+	  <td>模式：全部缓存(默认)`allKeepAlive`，自定义缓存组件`customizeKeepAlive`需要在route设置中上`meta: { keepAlive: true }`</td>
   </tr>
   <tr>
     <td>max</td>
@@ -59,6 +48,12 @@ export default {
 `replace`: 跟 `router.push` 很像，唯一的不同就是，它不会向 `history` 添加新记录</br>  
 `reLaunch`: 跳转时清除所有缓存组件，然后缓存重新缓存该页面组件</br>  
 其他(包括系统返回)的都属于后退，路由发生变化会销毁页面组件</br>
+
+**上面router对象中，添加`destroy`属性(String|Array)，用做自定义销毁缓存过的组件**
+```html
+<button @click="() => $router.replace({name: 'Page4', destroy: 'Page2'})">销毁 Page2, 跳转 Page4<button>
+<button @click="() => $router.push({name: 'Page4', destroy: ['Page2', 'Page3']})">销毁 Page2、Page3, 跳转 Page4<button>
+```
 
 #### 全局注册组件
 `KeepRouteView`
