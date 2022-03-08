@@ -69,14 +69,14 @@ export default {
       } else {
         this.back(name);
       }
+      if (this.destroy) {
+        this.handelDestroy()
+      }
       this.handleMatchClearList(to);
       if (!this.reLaunch) {
         if (this.includeList.length === 0) {
-          this.includeList.push(name)
+          this.asycnPush(name)
         }
-      }
-      if (this.destroy) {
-        this.handelDestroy()
       }
       this.reLaunch = false
     },
@@ -84,7 +84,7 @@ export default {
       const { includeList } = this
       for(let i = 0; i < includeList.length; i++) {
         if (name === includeList[i]) {
-          this.includeList.splice(i, 1);
+          includeList.splice(i, 1);
           break
         }
       }
@@ -97,6 +97,14 @@ export default {
         destroy.forEach(name => destroyTraverse(name))
       }
     },
+    asycnPush(name) {
+      // 避免 Vue 数据更新合在一次队列中，导致数据没有发生变化，reLaunch 没有清掉跳转页面的 name
+      if (Promise) {
+        Promise.resolve().then(() => this.includeList.push(name))
+      } else {
+        setTimeout(() => this.includeList.push(name), 0)
+      }
+    },
     // 前进
     forward(name) {
       if (this.includeList.includes(name)) {
@@ -107,12 +115,7 @@ export default {
         this.includeList.splice(0, 1);
       }
       if (this.reLaunch) {
-        // 避免 Vue 数据更新合在一次队列中，导致数据没有发生变化，reLaunch 没有清掉跳转页面的 name
-        if (Promise) {
-          Promise.resolve().then(() => this.includeList.push(name))
-        } else {
-          setTimeout(() => this.includeList.push(name), 0)
-        }
+        this.asycnPush(name)
       } else {
         this.includeList.push(name)
       }
