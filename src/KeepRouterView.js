@@ -47,7 +47,8 @@ export default {
 
   created() {
     this.isForward = false;
-    this.reLaunch = false
+    this.reLaunch = false;
+    this.destroy = null
     window.addEventListener('routeChange', (params) => {
       const { detail } = params;
       if (detail.type === 'reLaunch') {
@@ -55,6 +56,7 @@ export default {
         this.reLaunch = true
       }
       this.isForward = true;
+      this.destroy = detail.destroy
       setTimeout(() => (this.isForward = false), 300);
     });
     // 如果是vue2，watch 不会执行 $route
@@ -88,7 +90,25 @@ export default {
           this.includeList.push(name)
         }
       }
+      this.handelDestroy()
       this.reLaunch = false
+    },
+    destroyTraverse(name) {
+      const { includeList } = this
+      for(let i = 0; i < includeList.length; i++) {
+        if (name === includeList[i]) {
+          this.includeList.splice(i, 1);
+          break
+        }
+      }
+    },
+    handelDestroy() {
+      const { destroy, destroyTraverse } = this
+      if (typeof destroy === 'string' && destroy) {
+        destroyTraverse(destroy)
+      } else if (Array.isArray(destroy)) {
+        destroy.forEach(name => destroyTraverse(name))
+      }
     },
     // 前进
     forward(name) {

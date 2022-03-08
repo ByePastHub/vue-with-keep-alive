@@ -4,30 +4,100 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.index = {}, global.vue));
 })(this, (function (exports, vue) { 'use strict';
 
-  var withRouter = (function (router) {
-    var enhanceList = ['push', 'replace', 'reLaunch', 'forward'];
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
+
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+        }
+
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
+      });
+    };
+  }
+
+  function resetComponentsName(router, isChildren) {
+    var routes = isChildren ? router : router.getRoutes();
+    routes.forEach(function (route) {
+      if (!route.components || !route.components.default) return;
+
+      if (route.children && route.children.length > 0) {
+        resetComponentsName(route.children, true);
+      }
+
+      if (typeof route.components.default === 'function') {
+        var originDefault = route.components.default;
+        return route.components.default = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+          var component;
+          return regeneratorRuntime.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  _context.next = 2;
+                  return originDefault();
+
+                case 2:
+                  component = _context.sent;
+                  component.default.name = route.name;
+                  return _context.abrupt("return", component);
+
+                case 5:
+                case "end":
+                  return _context.stop();
+              }
+            }
+          }, _callee);
+        }));
+      }
+      route.components.default.name = route.name;
+    });
+  }
+
+  function getBaseOptions() {
+    var enhanceList = ['push', 'forward', 'replace', 'reLaunch'];
     var obj = Object.create(null);
     var options = {
       detail: {}
     };
     var routeTypeEvent = new CustomEvent('routeChange', options);
+    return {
+      enhanceList: enhanceList,
+      obj: obj,
+      options: options,
+      routeTypeEvent: routeTypeEvent
+    };
+  }
 
-    if (Object.prototype.hasOwnProperty.call(router, 'push')) {
-      router.reLaunch = function (to) {
-        return router.replace(to);
-      };
-
-      enhanceList.forEach(function (key) {
-        obj[key] = router[key];
-
-        router[key] = function (to) {
-          options.detail.type = key;
-          window.dispatchEvent(routeTypeEvent);
-          return obj[key](to);
-        };
-      });
-      return router;
-    }
+  function withRouter2x(router) {
+    var _getBaseOptions = getBaseOptions(),
+        enhanceList = _getBaseOptions.enhanceList,
+        obj = _getBaseOptions.obj,
+        options = _getBaseOptions.options,
+        routeTypeEvent = _getBaseOptions.routeTypeEvent;
 
     var historyPrototype = router.history.constructor.prototype;
     var routerPrototype = router.constructor.prototype;
@@ -61,11 +131,45 @@
 
     function dispatch(obj, key, location, onComplete, onAbort) {
       options.detail.type = key;
+      options.detail.destroy = location ? location.destroy : null;
       window.dispatchEvent(routeTypeEvent);
       return obj[key].call(router.history, location, onComplete, onAbort);
     }
 
     return router;
+  }
+
+  function withRouter3x(router) {
+    var _getBaseOptions2 = getBaseOptions(),
+        enhanceList = _getBaseOptions2.enhanceList,
+        obj = _getBaseOptions2.obj,
+        options = _getBaseOptions2.options,
+        routeTypeEvent = _getBaseOptions2.routeTypeEvent;
+
+    router.reLaunch = function (to) {
+      return router.replace(to);
+    };
+
+    enhanceList.forEach(function (key) {
+      obj[key] = router[key];
+
+      router[key] = function (to) {
+        options.detail.type = key;
+        options.detail.destroy = to ? to.destroy : null;
+        window.dispatchEvent(routeTypeEvent);
+        return obj[key](to);
+      };
+    });
+  }
+
+  var withRouter = (function (router) {
+    resetComponentsName(router);
+
+    if (Object.prototype.hasOwnProperty.call(router, 'push')) {
+      return withRouter3x(router);
+    }
+
+    return withRouter2x(router);
   });
 
   function render2x() {
@@ -157,6 +261,7 @@
 
       this.isForward = false;
       this.reLaunch = false;
+      this.destroy = null;
       window.addEventListener('routeChange', function (params) {
         var detail = params.detail;
 
@@ -166,6 +271,7 @@
         }
 
         _this2.isForward = true;
+        _this2.destroy = detail.destroy;
         setTimeout(function () {
           return _this2.isForward = false;
         }, 300);
@@ -203,7 +309,30 @@
           }
         }
 
+        this.handelDestroy();
         this.reLaunch = false;
+      },
+      destroyTraverse: function destroyTraverse(name) {
+        var includeList = this.includeList;
+
+        for (var i = 0; i < includeList.length; i++) {
+          if (name === includeList[i]) {
+            this.includeList.splice(i, 1);
+            break;
+          }
+        }
+      },
+      handelDestroy: function handelDestroy() {
+        var destroy = this.destroy,
+            destroyTraverse = this.destroyTraverse;
+
+        if (typeof destroy === 'string' && destroy) {
+          destroyTraverse(destroy);
+        } else if (Array.isArray(destroy)) {
+          destroy.forEach(function (name) {
+            return destroyTraverse(name);
+          });
+        }
       },
       // 前进
       forward: function forward(name) {

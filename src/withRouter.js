@@ -1,23 +1,34 @@
-export default (router) => {
-  const enhanceList = ['push', 'replace', 'reLaunch', 'forward'];
+function resetComponentsName(router, isChildren) {
+  const routes = isChildren ? router : router.getRoutes();
+  routes.forEach(function (route) {
+    if (!route.components || !route.components.default) return;
+    if (route.children && route.children.length > 0) {
+      resetComponentsName(route.children, true);
+    };
+
+    if (typeof route.components.default === 'function') {
+      const originDefault = route.components.default;
+      return route.components.default = async () => {
+        let component = await originDefault();
+        component.default.name = route.name;
+        return component;
+      };
+    };
+    route.components.default.name = route.name;
+  });
+};
+
+function getBaseOptions() {
+  const enhanceList = ['push', 'forward', 'replace', 'reLaunch'];
   const obj = Object.create(null);
   const options = { detail: {} };
   const routeTypeEvent = new CustomEvent('routeChange', options);
 
-  if (Object.prototype.hasOwnProperty.call(router, 'push')) {
-    router.reLaunch = (to) => router.replace(to);
-    enhanceList.forEach((key) => {
-      obj[key] = router[key];
-      router[key] = (to) => {
-        options.detail.type = key;
-        window.dispatchEvent(routeTypeEvent);
-        return obj[key](to);
-      };
-    });
+  return { enhanceList, obj, options, routeTypeEvent };
+}
 
-    return router;
-  }
-
+function withRouter2x(router) {
+  const { enhanceList, obj, options, routeTypeEvent } = getBaseOptions();
   const historyPrototype = router.history.constructor.prototype;
   const routerPrototype = router.constructor.prototype;
 
@@ -33,11 +44,36 @@ export default (router) => {
     routerPrototype[key] = (location, onComplete, onAbort) => dispatch(obj, key, location, onComplete, onAbort);
   });
 
-  function dispatch (obj, key, location, onComplete, onAbort) {
+  function dispatch(obj, key, location, onComplete, onAbort) {
     options.detail.type = key;
+    options.detail.destroy = location ? location.destroy : null;
     window.dispatchEvent(routeTypeEvent);
     return obj[key].call(router.history, location, onComplete, onAbort);
   }
 
   return router;
+}
+
+function withRouter3x(router) {
+  const { enhanceList, obj, options, routeTypeEvent } = getBaseOptions();
+  router.reLaunch = (to) => router.replace(to);
+  enhanceList.forEach((key) => {
+    obj[key] = router[key];
+    router[key] = (to) => {
+      options.detail.type = key;
+      options.detail.destroy = to ? to.destroy : null;
+      window.dispatchEvent(routeTypeEvent);
+      return obj[key](to);
+    };
+  });
+}
+
+export default (router) => {
+  resetComponentsName(router);
+
+  if (Object.prototype.hasOwnProperty.call(router, 'push')) {
+    return withRouter3x(router);
+  }
+
+  return withRouter2x(router);
 };

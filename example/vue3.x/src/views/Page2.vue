@@ -13,7 +13,6 @@
 
 <script>
 export default {
-  name: "Page2",
   data() {
     return {
       value: '',

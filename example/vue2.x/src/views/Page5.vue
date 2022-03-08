@@ -11,7 +11,6 @@
 
 <script>
 export default {
-  name: "Page5",
   data() {
     return {
       value: "",
