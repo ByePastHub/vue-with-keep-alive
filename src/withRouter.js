@@ -1,8 +1,8 @@
 function resetComponentsName(router, isChildren) {
   const routes = isChildren ? router : router.getRoutes();
   routes.forEach(function (route) {
-    if (!route.components || !route.components.default) return;
-    if (route.children && route.children.length > 0) {
+    if (!route?.components?.default) return;
+    if (route?.children.length > 0) {
       resetComponentsName(route.children, true);
     };
 

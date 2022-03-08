@@ -43,9 +43,11 @@
   function resetComponentsName(router, isChildren) {
     var routes = isChildren ? router : router.getRoutes();
     routes.forEach(function (route) {
-      if (!route.components || !route.components.default) return;
+      var _route$components;
 
-      if (route.children && route.children.length > 0) {
+      if (!(route !== null && route !== void 0 && (_route$components = route.components) !== null && _route$components !== void 0 && _route$components.default)) return;
+
+      if ((route === null || route === void 0 ? void 0 : route.children.length) > 0) {
         resetComponentsName(route.children, true);
       }
 
