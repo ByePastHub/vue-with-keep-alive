@@ -1,5 +1,8 @@
 # vue-with-keep-alive
 
+## introduce
+>`vue-with-keep-alive` can help you achieve forward refresh, the previous page is still active when you return, and you can experience the same as `app`. Where caching is needed, replace the `router-view` component with `keep-router-view`.
+
 ## language
 <a href="./README.md">中文</a></br>  
 <a href="./README_en-US.md">English</a></br>
@@ -15,25 +18,11 @@ Online Dome: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https:/
 `vue2.x` version install `npm install vue-with-keep-alive@2.x`</br>  
 `vue3.x` version install `npm install vue-with-keep-alive`
 
-**Notice:**
-The `name` in `route` must correspond to the `name` value exported by the component (must be written), otherwise the component will not be cached, for example:
-```js
-const routes = [
-  { path: '/home', name: 'Home', component: Home }
-]
-
-<script>
-export default {
-  name: 'Home' // Must correspond to the name above
-}
-</script>
-```
-
 **Component Properties**
 <table class="table table-bordered table-striped table-condensed">
   <tr>
     <td>mode</td>
-	  <td>Mode: all cache (default) `allKeepAlive`, custom cache `customizeKeepAlive`</td>
+	  <td>Mode: All cache (default) `allKeepAlive`, custom cache component `customizeKeepAlive` needs to be set in route settings `meta: { keepAlive: true }`</td>
   </tr>
   <tr>
     <td>max</td>
@@ -58,6 +47,12 @@ export default {
 `replace`: Like `router.push`, the only difference is that it does not add new records to `history`</br>  
 `reLaunch`: Clear all cached components when jumping, and then cache the page component again</br>  
 Others (including system return) are all backwards, and the page component will be destroyed when the route changes</br>
+
+**In the router object above, add the `destroy` attribute (String|Array), which is used to customize the destroyed cached component**
+```html
+<button @click="() => $router.replace({name: 'Page4', destroy: 'Page2'})">destroy Page2, to Page4<button>
+<button @click="() => $router.push({name: 'Page4', destroy: ['Page2', 'Page3']})">destroy Page2、Page3, to Page4<button>
+```
 
 #### Global registration component
 `KeepRouteView`

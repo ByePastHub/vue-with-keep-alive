@@ -9,7 +9,6 @@
 
 <script>
 export default {
-  name: "Page1",
   data() {
     return {
       value: "",
