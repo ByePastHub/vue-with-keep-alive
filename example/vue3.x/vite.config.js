@@ -4,8 +4,8 @@ import viteCompression from 'vite-plugin-compression'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/',
-  // base: '/vue-with-keep-alive',
+  // base: '/',
+  base: '/vue-with-keep-alive',
   plugins: [vue(), viteCompression()],
   server: {
     host: '0.0.0.0'
