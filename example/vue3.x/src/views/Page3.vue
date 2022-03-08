@@ -4,6 +4,7 @@
     <input v-model="value" />
     <p></p>
     <button @click="() => $router.replace('/page4')">replace to Page4</button>
+    <p></p>
     <button @click="() => $router.replace({path: '/page4', destroy: 'Page2'})">destroy Page2, replace to Page4</button>
   </div>
 </template>
