@@ -45,6 +45,8 @@ export default {
         this.includeList = [];
         this.reLaunch = true
       }
+      this.destroy = detail.destroy
+      console.log(this.destroy);
       this.isForward = true;
       setTimeout(() => (this.isForward = false), 300);
     });
@@ -74,7 +76,27 @@ export default {
           this.includeList.push(name)
         }
       }
+      if (this.destroy) {
+        this.handelDestroy()
+      }
       this.reLaunch = false
+    },
+    destroyTraverse(name) {
+      const { includeList } = this
+      for(let i = 0; i < includeList.length; i++) {
+        if (name === includeList[i]) {
+          this.includeList.splice(i, 1);
+          break
+        }
+      }
+    },
+    handelDestroy() {
+      const { destroy, destroyTraverse } = this
+      if (typeof destroy === 'string' && destroy) {
+        destroyTraverse(destroy)
+      } else if (Array.isArray(destroy)) {
+        destroy.forEach(name => destroyTraverse(name))
+      }
     },
     // 前进
     forward(name) {

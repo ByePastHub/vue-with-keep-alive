@@ -1,31 +1,119 @@
 import { resolveComponent, openBlock, createBlock, withCtx, KeepAlive, resolveDynamicComponent } from 'vue';
 
-var withRouter = (function (router) {
-  var enhanceList = ['push', 'replace', 'reLaunch', 'forward'];
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+  try {
+    var info = gen[key](arg);
+    var value = info.value;
+  } catch (error) {
+    reject(error);
+    return;
+  }
+
+  if (info.done) {
+    resolve(value);
+  } else {
+    Promise.resolve(value).then(_next, _throw);
+  }
+}
+
+function _asyncToGenerator(fn) {
+  return function () {
+    var self = this,
+        args = arguments;
+    return new Promise(function (resolve, reject) {
+      var gen = fn.apply(self, args);
+
+      function _next(value) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+      }
+
+      function _throw(err) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+      }
+
+      _next(undefined);
+    });
+  };
+}
+
+function resetComponentsName(router, isChildren) {
+  var routes = isChildren ? router : router.getRoutes();
+  routes.forEach(function (route) {
+    var _route$components, _route$children;
+
+    if (!(route !== null && route !== void 0 && (_route$components = route.components) !== null && _route$components !== void 0 && _route$components.default)) return;
+
+    if (((_route$children = route.children) === null || _route$children === void 0 ? void 0 : _route$children.length) > 0) {
+      resetComponentsName(route.children, true);
+    }
+
+    if (typeof route.components.default === 'function') {
+      var originDefault = route.components.default;
+      return route.components.default = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        var component;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return originDefault();
+
+              case 2:
+                component = _context.sent;
+                component.default.name = route.name;
+                return _context.abrupt("return", component);
+
+              case 5:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }));
+    }
+    route.components.default.name = route.name;
+  });
+}
+
+function getBaseOptions() {
+  var enhanceList = ['push', 'forward', 'replace', 'reLaunch'];
   var obj = Object.create(null);
   var options = {
     detail: {}
   };
   var routeTypeEvent = new CustomEvent('routeChange', options);
+  return {
+    enhanceList: enhanceList,
+    obj: obj,
+    options: options,
+    routeTypeEvent: routeTypeEvent
+  };
+}
 
-  if (Object.prototype.hasOwnProperty.call(router, 'push')) {
-    router.reLaunch = function (to) {
-      return router.replace(to);
+function withRouter(router) {
+  resetComponentsName(router);
+
+  var _getBaseOptions = getBaseOptions(),
+      enhanceList = _getBaseOptions.enhanceList,
+      obj = _getBaseOptions.obj,
+      options = _getBaseOptions.options,
+      routeTypeEvent = _getBaseOptions.routeTypeEvent;
+
+  router.reLaunch = function (to) {
+    return router.replace(to);
+  };
+
+  enhanceList.forEach(function (key) {
+    obj[key] = router[key];
+
+    router[key] = function (to) {
+      options.detail.type = key;
+      options.detail.destroy = to ? to.destroy : null;
+      window.dispatchEvent(routeTypeEvent);
+      return obj[key](to);
     };
-
-    enhanceList.forEach(function (key) {
-      obj[key] = router[key];
-
-      router[key] = function (to) {
-        options.detail.type = key;
-        window.dispatchEvent(routeTypeEvent);
-        return obj[key](to);
-      };
-    });
-  }
-
-  return router;
-});
+  });
+}
 
 function render(_ctx, _cache, $props, $setup, $data) {
   var _component_router_view = resolveComponent('router-view');
@@ -100,6 +188,8 @@ var KeepRouterView = {
         _this.reLaunch = true;
       }
 
+      _this.destroy = detail.destroy;
+      console.log(_this.destroy);
       _this.isForward = true;
       setTimeout(function () {
         return _this.isForward = false;
@@ -133,7 +223,33 @@ var KeepRouterView = {
         }
       }
 
+      if (this.destroy) {
+        this.handelDestroy();
+      }
+
       this.reLaunch = false;
+    },
+    destroyTraverse: function destroyTraverse(name) {
+      var includeList = this.includeList;
+
+      for (var i = 0; i < includeList.length; i++) {
+        if (name === includeList[i]) {
+          this.includeList.splice(i, 1);
+          break;
+        }
+      }
+    },
+    handelDestroy: function handelDestroy() {
+      var destroy = this.destroy,
+          destroyTraverse = this.destroyTraverse;
+
+      if (typeof destroy === 'string' && destroy) {
+        destroyTraverse(destroy);
+      } else if (Array.isArray(destroy)) {
+        destroy.forEach(function (name) {
+          return destroyTraverse(name);
+        });
+      }
     },
     // 前进
     forward: function forward(name) {
