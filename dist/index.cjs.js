@@ -39,11 +39,11 @@ function _asyncToGenerator(fn) {
 function resetComponentsName(router, isChildren) {
   var routes = isChildren ? router : router.getRoutes();
   routes.forEach(function (route) {
-    var _route$components;
+    var _route$components, _route$children;
 
     if (!(route !== null && route !== void 0 && (_route$components = route.components) !== null && _route$components !== void 0 && _route$components.default)) return;
 
-    if ((route === null || route === void 0 ? void 0 : route.children.length) > 0) {
+    if (((_route$children = route.children) === null || _route$children === void 0 ? void 0 : _route$children.length) > 0) {
       resetComponentsName(route.children, true);
     }
 
