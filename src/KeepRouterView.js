@@ -46,7 +46,6 @@ export default {
         this.reLaunch = true
       }
       this.destroy = detail.destroy
-      console.log(this.destroy);
       this.isForward = true;
       setTimeout(() => (this.isForward = false), 300);
     });

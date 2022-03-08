@@ -189,7 +189,6 @@ var KeepRouterView = {
       }
 
       _this.destroy = detail.destroy;
-      console.log(_this.destroy);
       _this.isForward = true;
       setTimeout(function () {
         return _this.isForward = false;
