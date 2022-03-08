@@ -90,7 +90,9 @@ export default {
           this.includeList.push(name)
         }
       }
-      this.handelDestroy()
+      if (this.destroy) {
+        this.handelDestroy()
+      }
       this.reLaunch = false
     },
     destroyTraverse(name) {
