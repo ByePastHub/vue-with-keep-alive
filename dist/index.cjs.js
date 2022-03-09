@@ -300,7 +300,7 @@ var KeepRouterView = {
       }
 
       if (this.destroy) {
-        this.handelDestroy();
+        this.handelDestroy(name);
       }
 
       this.handleMatchClearList(to);
@@ -323,7 +323,7 @@ var KeepRouterView = {
         }
       }
     },
-    handelDestroy: function handelDestroy() {
+    handelDestroy: function handelDestroy(name) {
       var destroy = this.destroy,
           destroyTraverse = this.destroyTraverse;
 
@@ -333,6 +333,10 @@ var KeepRouterView = {
         destroy.forEach(function (name) {
           return destroyTraverse(name);
         });
+      }
+
+      if (!this.includeList.includes(name)) {
+        this.asycnPush(name);
       }
     },
     asycnPush: function asycnPush(name) {
