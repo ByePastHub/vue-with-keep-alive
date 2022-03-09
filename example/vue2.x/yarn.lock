@@ -8463,10 +8463,10 @@
   "resolved" "https://registry.nlark.com/vue-template-es2015-compiler/download/vue-template-es2015-compiler-1.9.1.tgz"
   "version" "1.9.1"
 
-"vue-with-keep-alive@^2.1.0":
-  "integrity" "sha512-NREZGpvAB8iygQH6H9AbROYGupP4RixUrYkSx3X8YrqA6IdDPsYNas4OCOjGUSTmg0/OL89SgRtSM9Vwd0QfuQ=="
-  "resolved" "https://registry.npmjs.org/vue-with-keep-alive/-/vue-with-keep-alive-2.1.0.tgz"
-  "version" "2.1.0"
+"vue-with-keep-alive@^2.2.3":
+  "integrity" "sha512-sK5XMC6BVpkGgtWXEfyZ6XiGUw4Fjyw3qagTCdK7KD4IqVjZ/G3wZrlDdaNTp+kpA9u//t4U2uoX8hgS1RJb7w=="
+  "resolved" "https://registry.npmjs.org/vue-with-keep-alive/-/vue-with-keep-alive-2.2.3.tgz"
+  "version" "2.2.3"
   dependencies:
     "@vue/compiler-sfc" "^3.2.26"
 
