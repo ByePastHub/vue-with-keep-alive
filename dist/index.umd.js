@@ -219,7 +219,7 @@
         }
 
         if (this.destroy) {
-          this.handelDestroy();
+          this.handelDestroy(name);
         }
 
         this.handleMatchClearList(to);
@@ -242,7 +242,7 @@
           }
         }
       },
-      handelDestroy: function handelDestroy() {
+      handelDestroy: function handelDestroy(name) {
         var destroy = this.destroy,
             destroyTraverse = this.destroyTraverse;
 
@@ -253,19 +253,23 @@
             return destroyTraverse(name);
           });
         }
+
+        this.asycnPush(name);
       },
       asycnPush: function asycnPush(name) {
         var _this2 = this;
 
         // 避免 Vue 数据更新合在一次队列中，导致数据没有发生变化，reLaunch 没有清掉跳转页面的 name
+        var push = function push() {
+          if (_this2.includeList.includes(name)) return;
+
+          _this2.includeList.push(name);
+        };
+
         if (Promise) {
-          Promise.resolve().then(function () {
-            return _this2.includeList.push(name);
-          });
+          Promise.resolve().then(push);
         } else {
-          setTimeout(function () {
-            return _this2.includeList.push(name);
-          }, 0);
+          setTimeout(push, 0);
         }
       },
       // 前进
