@@ -70,7 +70,7 @@ export default {
         this.back(name);
       }
       if (this.destroy) {
-        this.handelDestroy()
+        this.handelDestroy(name)
       }
       this.handleMatchClearList(to);
       if (!this.reLaunch) {
@@ -89,12 +89,15 @@ export default {
         }
       }
     },
-    handelDestroy() {
+    handelDestroy(name) {
       const { destroy, destroyTraverse } = this
       if (typeof destroy === 'string' && destroy) {
         destroyTraverse(destroy)
       } else if (Array.isArray(destroy)) {
         destroy.forEach(name => destroyTraverse(name))
+      }
+      if (!this.includeList.includes(name)) {
+        this.asycnPush(name);
       }
     },
     asycnPush(name) {
