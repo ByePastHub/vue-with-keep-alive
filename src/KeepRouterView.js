@@ -96,17 +96,19 @@ export default {
       } else if (Array.isArray(destroy)) {
         destroy.forEach(name => destroyTraverse(name))
       }
-      if (!this.includeList.includes(name)) {
-        this.asycnPush(name);
-      }
+      this.asycnPush(name);
     },
     asycnPush(name) {
       // 避免 Vue 数据更新合在一次队列中，导致数据没有发生变化，reLaunch 没有清掉跳转页面的 name
+      const push = () => {
+        if (this.includeList.includes(name)) return;
+        this.includeList.push(name);
+      };
       if (Promise) {
-        Promise.resolve().then(() => this.includeList.push(name))
+        Promise.resolve().then(push);
       } else {
-        setTimeout(() => this.includeList.push(name), 0)
-      }
+        setTimeout(push, 0);
+      };
     },
     // 前进
     forward(name) {
