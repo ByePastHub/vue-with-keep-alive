@@ -1,14 +1,14 @@
-import { render2x, render3x } from './render'
+import { render2x, render3x } from './render';
 import { Vue } from './index';
 
-let _this
+let _this;
 export default {
   name: 'KeepRouteView',
   render: function() {
     if (!_this.vueNext) {
-      return render2x.call(_this)
+      return render2x.call(_this);
     } else {
-      return render3x(...arguments)
+      return render3x(...arguments);
     }
   },
   props: {
@@ -48,22 +48,22 @@ export default {
   created() {
     this.isForward = false;
     this.reLaunch = false;
-    this.destroy = null
+    this.destroy = null;
     window.addEventListener('routeChange', (params) => {
       const { detail } = params;
       if (detail.type === 'reLaunch') {
         this.includeList = [];
-        this.reLaunch = true
+        this.reLaunch = true;
       }
       this.isForward = true;
-      this.destroy = detail.destroy
+      this.destroy = detail.destroy;
       setTimeout(() => (this.isForward = false), 300);
     });
     // 如果是vue2，watch 不会执行 $route
     // if (!this.vueNext) {
     //   this.watchRoute(this.$route);
     // }
-    _this = this
+    _this = this;
   },
 
   watch: {
@@ -77,7 +77,7 @@ export default {
 
   methods: {
     watchRoute(to) {
-      const name = this.getRouteName(to)
+      const name = this.getRouteName(to);
       this.handleMatchClearBehindList(name);
       if (this.isForward) {
         this.forward(name);
@@ -85,42 +85,44 @@ export default {
         this.back(name);
       }
       if (this.destroy) {
-        this.handelDestroy(name)
+        this.handelDestroy(name);
       }
       this.handleMatchClearList(to);
       if (!this.reLaunch) {
         if (this.includeList.length === 0) {
-          this.asycnPush(name)
+          this.asycnPush(name);
         }
       }
-      this.reLaunch = false
+      this.reLaunch = false;
     },
     destroyTraverse(name) {
-      const { includeList } = this
-      for(let i = 0; i < includeList.length; i++) {
+      const { includeList } = this;
+      for (let i = 0; i < includeList.length; i++) {
         if (name === includeList[i]) {
           includeList.splice(i, 1);
-          break
+          break;
         }
       }
     },
     handelDestroy(name) {
-      const { destroy, destroyTraverse } = this
+      const { destroy, destroyTraverse } = this;
       if (typeof destroy === 'string' && destroy) {
-        destroyTraverse(destroy)
+        destroyTraverse(destroy);
       } else if (Array.isArray(destroy)) {
-        destroy.forEach(name => destroyTraverse(name))
+        destroy.forEach(name => destroyTraverse(name));
       }
-      if (!this.includeList.includes(name)) {
-        this.asycnPush(name)
-      }
+      this.asycnPush(name);
     },
     asycnPush(name) {
       // 避免 Vue 数据更新合在一次队列中，导致数据没有发生变化，reLaunch 没有清掉跳转页面的 name
+      const push = () => {
+        if (this.includeList.includes(name)) return;
+        this.includeList.push(name);
+      };
       if (Promise) {
-        Promise.resolve().then(() => this.includeList.push(name))
+        Promise.resolve().then(push);
       } else {
-        setTimeout(() => this.includeList.push(name), 0)
+        setTimeout(push, 0);
       }
     },
     // 前进
@@ -133,9 +135,9 @@ export default {
         this.includeList.splice(0, 1);
       }
       if (this.reLaunch) {
-        this.asycnPush(name)
+        this.asycnPush(name);
       } else {
-        this.includeList.push(name)
+        this.includeList.push(name);
       }
     },
     // 后退
@@ -162,10 +164,10 @@ export default {
       }
     },
     getRouteName(to) {
-      const name = to.name
-      const keepAlive = to.meta.keepAlive
+      const name = to.name;
+      const keepAlive = to.meta.keepAlive;
 
-      return this.mode === 'allKeepAlive' || keepAlive ? name : '__' + name
+      return this.mode === 'allKeepAlive' || keepAlive ? name : '__' + name;
     }
   },
 };

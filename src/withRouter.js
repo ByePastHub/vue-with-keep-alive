@@ -1,6 +1,6 @@
 function resetComponentsName(router, isChildren) {
   const routes = isChildren ? router : router.getRoutes();
-  routes.forEach(function (route) {
+  routes.forEach(function(route) {
     if (!route?.components?.default) return;
     if (route.children?.length > 0) {
       resetComponentsName(route.children, true);
@@ -8,11 +8,11 @@ function resetComponentsName(router, isChildren) {
 
     if (typeof route.components.default === 'function') {
       const originDefault = route.components.default;
-      return route.components.default = async () => {
-        let component = await originDefault();
+      return (route.components.default = async() => {
+        const component = await originDefault();
         component.default.name = route.name;
         return component;
-      };
+      });
     };
     route.components.default.name = route.name;
   });
@@ -21,7 +21,7 @@ function resetComponentsName(router, isChildren) {
 function getBaseOptions() {
   const enhanceList = ['push', 'forward', 'replace', 'reLaunch'];
   const obj = Object.create(null);
-  const options = { detail: {} };
+  const options = { detail: {}};
   const routeTypeEvent = new CustomEvent('routeChange', options);
 
   return { enhanceList, obj, options, routeTypeEvent };
@@ -32,7 +32,7 @@ function withRouter2x(router) {
   const historyPrototype = router.history.constructor.prototype;
   const routerPrototype = router.constructor.prototype;
 
-  routerPrototype.reLaunch = to => routerPrototype.replace(to)
+  routerPrototype.reLaunch = to => routerPrototype.replace(to);
   historyPrototype.reLaunch = to => historyPrototype.replace(to);
 
   const routerObj = Object.create(null);
