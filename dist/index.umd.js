@@ -159,6 +159,168 @@
     }, [_c('router-view')], 1);
   }
 
+  var methods = {
+    watchRoute: function watchRoute(to) {
+      var name = this.getRouteName(to);
+      this.handleMatchClearBehindList(name);
+
+      if (this.isForward) {
+        this.forward(name);
+      } else {
+        this.back(name);
+      }
+
+      if (this.destroy) {
+        this.handelDestroy(name, 'addSelf');
+      }
+
+      this.handleMatchClearList(to);
+
+      if (!this.reLaunch) {
+        if (this.includeList.length === 0) {
+          this.asycnPush(name);
+        }
+      }
+
+      this.reLaunch = false;
+    },
+    forward: function forward(name) {
+      var includeList = this.includeList;
+
+      if (includeList.includes(name)) {
+        var index = includeList.indexOf(name);
+        includeList.splice(index, 1);
+      }
+
+      if (includeList.length === this.max) {
+        includeList.splice(0, 1);
+      }
+
+      if (this.reLaunch) {
+        this.asycnPush(name);
+      } else if (this.keepComponentDestroy && this.includeKeepComponentDestroy(name)) {
+        this.asycnPush(name);
+      } else {
+        includeList.push(name);
+      }
+    },
+    back: function back(name) {
+      if (this.includeList.length === 1) {
+        this.includeList = [name];
+      }
+
+      var index = this.includeList.indexOf(name);
+
+      if (index >= 0) {
+        this.includeList.splice(index + 1);
+      }
+    },
+    handelDestroy: function handelDestroy(name, mode) {
+      var _this = this;
+
+      var destroy = this.destroy,
+          destroyTraverse = this.destroyTraverse;
+
+      if (typeof destroy === 'string' && destroy) {
+        destroyTraverse(destroy);
+      } else if (Array.isArray(destroy)) {
+        destroy.forEach(function (name) {
+          return destroyTraverse(name);
+        });
+      }
+
+      this.$nextTick(function () {
+        _this.keepComponentDestroy = null;
+      });
+      if (mode === 'clearSelf') return;
+      this.asycnPush(name);
+    },
+    handleMatchClearBehindList: function handleMatchClearBehindList(name) {
+      if (this.matchClearBehindList.includes(name)) {
+        var index = this.includeList.indexOf(name);
+        if (index < 0) return;
+        this.includeList.splice(index + 1);
+      }
+    },
+    handleMatchClearList: function handleMatchClearList(to) {
+      var index = this.matchClearList.indexOf(to.name || to.path);
+
+      if (index >= 0) {
+        this.includeList = [];
+      }
+    },
+    getRouteName: function getRouteName(to) {
+      var name = to.name;
+      var keepAlive = to.meta.keepAlive;
+      return this.mode === 'allKeepAlive' || keepAlive ? name : '__' + name;
+    },
+    includeKeepComponentDestroy: function includeKeepComponentDestroy(name) {
+      var keepComponentDestroy = this.keepComponentDestroy;
+
+      if (typeof keepComponentDestroy === 'string') {
+        return keepComponentDestroy === name;
+      } else if (Array.isArray(keepComponentDestroy)) {
+        return keepComponentDestroy.includes(name);
+      }
+
+      return false;
+    },
+    destroyTraverse: function destroyTraverse(name) {
+      var includeList = this.includeList;
+
+      for (var i = 0; i < includeList.length; i++) {
+        if (name === includeList[i]) {
+          includeList.splice(i, 1);
+          break;
+        }
+      }
+    },
+    asycnPush: function asycnPush(name) {
+      var _this2 = this;
+
+      var push = function push() {
+        if (_this2.includeList.includes(name)) return;
+
+        _this2.includeList.push(name);
+      };
+
+      if (Promise) {
+        Promise.resolve().then(push);
+      } else {
+        setTimeout(push, 0);
+      }
+    },
+    addRouteChangeEvent: function addRouteChangeEvent() {
+      var _this3 = this;
+
+      window.addEventListener('keep-routeChange', function (params) {
+        var detail = params.detail;
+
+        if (detail.type === 'reLaunch') {
+          _this3.includeList = [];
+          _this3.reLaunch = true;
+        }
+
+        _this3.destroy = detail.destroy;
+        _this3.isForward = true;
+        setTimeout(function () {
+          return _this3.isForward = false;
+        }, 300);
+      });
+    },
+    addComponentDestroyEvent: function addComponentDestroyEvent() {
+      var _this4 = this;
+
+      window.addEventListener('keep-componentDestroy', function (params) {
+        var detail = params.detail;
+        _this4.destroy = detail;
+        _this4.keepComponentDestroy = detail;
+
+        _this4.handelDestroy(_this4.$route.name, 'clearSelf');
+      });
+    }
+  };
+
   var KeepRouterView = {
     name: 'KeepRouteView',
     render: render,
@@ -215,148 +377,7 @@
         }
       }
     },
-    methods: {
-      watchRoute: function watchRoute(to) {
-        var name = this.getRouteName(to);
-        this.handleMatchClearBehindList(name);
-
-        if (this.isForward) {
-          this.forward(name);
-        } else {
-          this.back(name);
-        }
-
-        if (this.destroy) {
-          this.handelDestroy(name);
-        }
-
-        this.handleMatchClearList(to);
-
-        if (!this.reLaunch) {
-          if (this.includeList.length === 0) {
-            this.asycnPush(name);
-          }
-        }
-
-        this.reLaunch = false;
-      },
-      destroyTraverse: function destroyTraverse(name) {
-        var includeList = this.includeList;
-
-        for (var i = 0; i < includeList.length; i++) {
-          if (name === includeList[i]) {
-            includeList.splice(i, 1);
-            break;
-          }
-        }
-      },
-      handelDestroy: function handelDestroy(name) {
-        var destroy = this.destroy,
-            destroyTraverse = this.destroyTraverse;
-
-        if (typeof destroy === 'string' && destroy) {
-          destroyTraverse(destroy);
-        } else if (Array.isArray(destroy)) {
-          destroy.forEach(function (name) {
-            return destroyTraverse(name);
-          });
-        }
-
-        this.asycnPush(name);
-      },
-      asycnPush: function asycnPush(name) {
-        var _this = this;
-
-        // 避免 Vue 数据更新合在一次队列中，导致数据没有发生变化，reLaunch 没有清掉跳转页面的 name
-        var push = function push() {
-          if (_this.includeList.includes(name)) return;
-
-          _this.includeList.push(name);
-        };
-
-        if (Promise) {
-          Promise.resolve().then(push);
-        } else {
-          setTimeout(push, 0);
-        }
-      },
-      // 前进
-      forward: function forward(name) {
-        if (this.includeList.includes(name)) {
-          var index = this.includeList.indexOf(name);
-          this.includeList.splice(index, 1);
-        }
-
-        if (this.includeList.length === this.max) {
-          this.includeList.splice(0, 1);
-        }
-
-        if (this.reLaunch) {
-          this.asycnPush(name);
-        } else {
-          this.includeList.push(name);
-        }
-      },
-      // 后退
-      back: function back(name) {
-        if (this.includeList.length === 1) {
-          this.includeList = [name];
-        }
-
-        var index = this.includeList.indexOf(name);
-
-        if (index >= 0) {
-          this.includeList.splice(index + 1);
-        }
-      },
-      handleMatchClearBehindList: function handleMatchClearBehindList(name) {
-        if (this.matchClearBehindList.includes(name)) {
-          var index = this.includeList.indexOf(name);
-          if (index < 0) return;
-          this.includeList.splice(index + 1);
-        }
-      },
-      handleMatchClearList: function handleMatchClearList(to) {
-        var index = this.matchClearList.indexOf(to.name || to.path);
-
-        if (index >= 0) {
-          this.includeList = [];
-        }
-      },
-      getRouteName: function getRouteName(to) {
-        var name = to.name;
-        var keepAlive = to.meta.keepAlive;
-        return this.mode === 'allKeepAlive' || keepAlive ? name : '__' + name;
-      },
-      addRouteChangeEvent: function addRouteChangeEvent() {
-        var _this2 = this;
-
-        window.addEventListener('keep-routeChange', function (params) {
-          var detail = params.detail;
-
-          if (detail.type === 'reLaunch') {
-            _this2.includeList = [];
-            _this2.reLaunch = true;
-          }
-
-          _this2.destroy = detail.destroy;
-          _this2.isForward = true;
-          setTimeout(function () {
-            return _this2.isForward = false;
-          }, 300);
-        });
-      },
-      addComponentDestroyEvent: function addComponentDestroyEvent() {
-        var _this3 = this;
-
-        window.addEventListener('keep-componentDestroy', function (params) {
-          var detail = params.detail;
-          _this3.destroy = detail;
-
-          _this3.handelDestroy(_this3.$route.name);
-        });
-      }
-    }
+    methods: methods
   };
 
   function destroy(value) {
