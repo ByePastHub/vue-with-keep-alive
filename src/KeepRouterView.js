@@ -49,7 +49,7 @@ export default {
     this.isForward = false;
     this.reLaunch = false;
     this.destroy = null;
-    window.addEventListener('routeChange', (params) => {
+    window.addEventListener('keep-routeChange', (params) => {
       const { detail } = params;
       if (detail.type === 'reLaunch') {
         this.includeList = [];
@@ -59,10 +59,11 @@ export default {
       this.destroy = detail.destroy;
       setTimeout(() => (this.isForward = false), 300);
     });
-    // 如果是vue2，watch 不会执行 $route
-    // if (!this.vueNext) {
-    //   this.watchRoute(this.$route);
-    // }
+    window.addEventListener('keep-componentDestroy', (params) => {
+      const { detail } = params;
+      this.destroy = detail;
+      this.handelDestroy(this.$route.name);
+    });
     _this = this;
   },
 

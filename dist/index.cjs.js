@@ -81,7 +81,7 @@ function getBaseOptions() {
   var options = {
     detail: {}
   };
-  var routeTypeEvent = new CustomEvent('routeChange', options);
+  var routeTypeEvent = new CustomEvent('keep-routeChange', options);
   return {
     enhanceList: enhanceList,
     obj: obj,
@@ -260,7 +260,7 @@ var KeepRouterView = {
     this.isForward = false;
     this.reLaunch = false;
     this.destroy = null;
-    window.addEventListener('routeChange', function (params) {
+    window.addEventListener('keep-routeChange', function (params) {
       var detail = params.detail;
 
       if (detail.type === 'reLaunch') {
@@ -273,11 +273,13 @@ var KeepRouterView = {
       setTimeout(function () {
         return _this2.isForward = false;
       }, 300);
-    }); // 如果是vue2，watch 不会执行 $route
-    // if (!this.vueNext) {
-    //   this.watchRoute(this.$route);
-    // }
+    });
+    window.addEventListener('keep-componentDestroy', function (params) {
+      var detail = params.detail;
+      _this2.destroy = detail;
 
+      _this2.handelDestroy(_this2.$route.name);
+    });
     _this = this;
   },
   watch: {
@@ -404,12 +406,28 @@ var KeepRouterView = {
   }
 };
 
+function destroy(value) {
+  var destroyEvent = new CustomEvent('keep-componentDestroy', {
+    detail: value
+  });
+  window.dispatchEvent(destroyEvent);
+}
+
 var Vue;
 var index = {
   install: function install(app, router) {
     withRouter(router);
     app.component('KeepRouterView', KeepRouterView);
     Vue = app;
+    var keepRouter = {
+      destroy: destroy
+    };
+
+    if (Number(app.version.slice(0, 1)) < 3) {
+      app.prototype.$keepRouter = keepRouter;
+    } else {
+      app.config.globalProperties.$keepRouter = keepRouter;
+    }
   }
 };
 

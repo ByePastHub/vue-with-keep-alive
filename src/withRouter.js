@@ -22,7 +22,7 @@ function getBaseOptions() {
   const enhanceList = ['push', 'forward', 'replace', 'reLaunch'];
   const obj = Object.create(null);
   const options = { detail: {}};
-  const routeTypeEvent = new CustomEvent('routeChange', options);
+  const routeTypeEvent = new CustomEvent('keep-routeChange', options);
 
   return { enhanceList, obj, options, routeTypeEvent };
 }
