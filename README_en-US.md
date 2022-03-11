@@ -52,6 +52,10 @@ Others (including system return) are all backwards, and the page component will 
 ```html
 <button @click="() => $router.replace({name: 'Page4', destroy: 'Page2'})">destroy Page2, to Page4<button>
 <button @click="() => $router.push({name: 'Page4', destroy: ['Page2', 'Page3']})">destroy Page2、Page3, to Page4<button>
+<button @click="() => {
+  $router.push({name: 'Page4'})
+  $keepRouter.destroy('Page2')
+}">destroy Page2, to Page4<button>
 ```
 
 #### Global registration component

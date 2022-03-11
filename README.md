@@ -53,6 +53,10 @@ yarn install vue-with-keep-alive
 ```html
 <button @click="() => $router.replace({name: 'Page4', destroy: 'Page2'})">销毁 Page2, 跳转 Page4<button>
 <button @click="() => $router.push({name: 'Page4', destroy: ['Page2', 'Page3']})">销毁 Page2、Page3, 跳转 Page4<button>
+<button @click="() => {
+  $router.push({name: 'Page4'})
+  $keepRouter.destroy('Page2')
+}">销毁 Page2, 跳转 Page4<button>
 ```
 
 #### 全局注册组件
