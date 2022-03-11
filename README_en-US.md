@@ -52,7 +52,14 @@ Others (including system return) are all backwards, and the page component will 
 ```html
 <button @click="() => $router.replace({name: 'Page4', destroy: 'Page2'})">destroy Page2, to Page4<button>
 <button @click="() => $router.push({name: 'Page4', destroy: ['Page2', 'Page3']})">destroy Page2、Page3, to Page4<button>
+<button @click="() => {
+  $router.push({name: 'Page4'})
+  $keepRouter.destroy('Page2')
+}">destroy Page2, to Page4<button>
 ```
+
+>**提示**<br/> 
+>If the jump page exists in `destroy`, it will clear the cache first, and then add itself
 
 #### Global registration component
 `KeepRouteView`

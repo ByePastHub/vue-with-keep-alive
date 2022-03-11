@@ -53,7 +53,14 @@ yarn install vue-with-keep-alive
 ```html
 <button @click="() => $router.replace({name: 'Page4', destroy: 'Page2'})">销毁 Page2, 跳转 Page4<button>
 <button @click="() => $router.push({name: 'Page4', destroy: ['Page2', 'Page3']})">销毁 Page2、Page3, 跳转 Page4<button>
+<button @click="() => {
+  $router.push({name: 'Page4'})
+  $keepRouter.destroy('Page2')
+}">销毁 Page2, 跳转 Page4<button>
 ```
+
+>**提示**<br/> 
+>如果跳转页面在`destroy`存在，会先清除缓存，然后再添加自身
 
 #### 全局注册组件
 `KeepRouteView`
