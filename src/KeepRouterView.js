@@ -1,6 +1,5 @@
 import { render2x, render3x } from './render';
 import { Vue } from './index';
-
 let _this;
 export default {
   name: 'KeepRouteView',
@@ -12,30 +11,25 @@ export default {
     }
   },
   props: {
-    // 页面最大缓存数量
     max: {
       type: Number,
       default: 5,
     },
-    // 字符串或正则表达式。任何名称匹配的组件都不会被缓存。
     exclude: {
       type: [Array, RegExp, String],
       default: () => [],
     },
-    // 匹配到会除了当前页面的名称外，清空其他的页面名称
     matchClearList: {
       type: Array,
       default: () => ['/'],
     },
-    // 如果是后退，匹配到名称时，会把后面所以的名称剔除掉
     matchClearBehindList: {
       type: Array,
       default: () => [],
     },
-    // 全部缓存，自定义缓存(设置在 route 的 meta.keepAlive = true 则为缓存)
     mode: {
       type: String,
-      default: 'allKeepAlive', // allKeepAlive ｜ customizeKeepAlive
+      default: 'allKeepAlive',
     }
   },
   data() {
@@ -44,29 +38,14 @@ export default {
       includeList: [],
     };
   },
-
   created() {
     this.isForward = false;
     this.reLaunch = false;
     this.destroy = null;
-    window.addEventListener('keep-routeChange', (params) => {
-      const { detail } = params;
-      if (detail.type === 'reLaunch') {
-        this.includeList = [];
-        this.reLaunch = true;
-      }
-      this.isForward = true;
-      this.destroy = detail.destroy;
-      setTimeout(() => (this.isForward = false), 300);
-    });
-    window.addEventListener('keep-componentDestroy', (params) => {
-      const { detail } = params;
-      this.destroy = detail;
-      this.handelDestroy(this.$route.name);
-    });
+    this.addRouteChangeEvent();
+    this.addComponentDestroyEvent();
     _this = this;
   },
-
   watch: {
     $route: {
       immediate: true,
@@ -75,7 +54,6 @@ export default {
       }
     }
   },
-
   methods: {
     watchRoute(to) {
       const name = this.getRouteName(to);
@@ -86,7 +64,7 @@ export default {
         this.back(name);
       }
       if (this.destroy) {
-        this.handelDestroy(name);
+        this.handelDestroy(name, 'addSelf');
       }
       this.handleMatchClearList(to);
       if (!this.reLaunch) {
@@ -96,52 +74,23 @@ export default {
       }
       this.reLaunch = false;
     },
-    destroyTraverse(name) {
-      const { includeList } = this;
-      for (let i = 0; i < includeList.length; i++) {
-        if (name === includeList[i]) {
-          includeList.splice(i, 1);
-          break;
-        }
-      }
-    },
-    handelDestroy(name) {
-      const { destroy, destroyTraverse } = this;
-      if (typeof destroy === 'string' && destroy) {
-        destroyTraverse(destroy);
-      } else if (Array.isArray(destroy)) {
-        destroy.forEach(name => destroyTraverse(name));
-      }
-      this.asycnPush(name);
-    },
-    asycnPush(name) {
-      // 避免 Vue 数据更新合在一次队列中，导致数据没有发生变化，reLaunch 没有清掉跳转页面的 name
-      const push = () => {
-        if (this.includeList.includes(name)) return;
-        this.includeList.push(name);
-      };
-      if (Promise) {
-        Promise.resolve().then(push);
-      } else {
-        setTimeout(push, 0);
-      }
-    },
-    // 前进
     forward(name) {
-      if (this.includeList.includes(name)) {
-        const index = this.includeList.indexOf(name);
-        this.includeList.splice(index, 1);
+      const { includeList } = this;
+      if (includeList.includes(name)) {
+        const index = includeList.indexOf(name);
+        includeList.splice(index, 1);
       }
-      if (this.includeList.length === this.max) {
-        this.includeList.splice(0, 1);
+      if (includeList.length === this.max) {
+        includeList.splice(0, 1);
       }
       if (this.reLaunch) {
         this.asycnPush(name);
+      } else if (this.keepComponentDestroy && this.includeKeepComponentDestroy(name)) {
+        this.asycnPush(name);
       } else {
-        this.includeList.push(name);
+        includeList.push(name);
       }
     },
-    // 后退
     back(name) {
       if (this.includeList.length === 1) {
         this.includeList = [name];
@@ -150,6 +99,19 @@ export default {
       if (index >= 0) {
         this.includeList.splice(index + 1);
       }
+    },
+    handelDestroy(name, mode) {
+      const { destroy, destroyTraverse } = this;
+      if (typeof destroy === 'string' && destroy) {
+        destroyTraverse(destroy);
+      } else if (Array.isArray(destroy)) {
+        destroy.forEach(name => destroyTraverse(name));
+      }
+      this.$nextTick(() => {
+        this.keepComponentDestroy = null;
+      });
+      if (mode === 'clearSelf') return;
+      this.asycnPush(name);
     },
     handleMatchClearBehindList(name) {
       if (this.matchClearBehindList.includes(name)) {
@@ -167,8 +129,56 @@ export default {
     getRouteName(to) {
       const name = to.name;
       const keepAlive = to.meta.keepAlive;
-
       return this.mode === 'allKeepAlive' || keepAlive ? name : '__' + name;
+    },
+    includeKeepComponentDestroy(name) {
+      const { keepComponentDestroy } = this;
+      if (typeof keepComponentDestroy === 'string') {
+        return keepComponentDestroy === name;
+      } else if (Array.isArray(keepComponentDestroy)) {
+        return keepComponentDestroy.includes(name);
+      }
+      return false;
+    },
+    destroyTraverse(name) {
+      const { includeList } = this;
+      for (let i = 0; i < includeList.length; i++) {
+        if (name === includeList[i]) {
+          includeList.splice(i, 1);
+          break;
+        }
+      }
+    },
+    asycnPush(name) {
+      const push = () => {
+        if (this.includeList.includes(name)) return;
+        this.includeList.push(name);
+      };
+      if (Promise) {
+        Promise.resolve().then(push);
+      } else {
+        setTimeout(push, 0);
+      }
+    },
+    addRouteChangeEvent() {
+      window.addEventListener('keep-routeChange', (params) => {
+        const { detail } = params;
+        if (detail.type === 'reLaunch') {
+          this.includeList = [];
+          this.reLaunch = true;
+        }
+        this.destroy = detail.destroy;
+        this.isForward = true;
+        setTimeout(() => (this.isForward = false), 300);
+      });
+    },
+    addComponentDestroyEvent() {
+      window.addEventListener('keep-componentDestroy', (params) => {
+        const { detail } = params;
+        this.destroy = detail;
+        this.keepComponentDestroy = detail;
+        this.handelDestroy(this.$route.name, 'clearSelf');
+      });
     }
   },
 };

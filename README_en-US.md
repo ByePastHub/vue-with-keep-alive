@@ -58,6 +58,10 @@ Others (including system return) are all backwards, and the page component will 
 }">destroy Page2, to Page4<button>
 ```
 
+>**Diff**<br/> 
+>- `destroy` property in `$router`: If the jump page exists in `destroy`, it will clear the cache first, then add itself
+>- `$keepRouter.destroy` function: if the jump page exists in `destroy`, clear it directly
+
 #### Global registration component
 `KeepRouteView`
 
