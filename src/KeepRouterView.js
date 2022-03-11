@@ -38,17 +38,9 @@ export default {
 
   created() {
     this.isForward = false;
-    this.reLaunch = false
-    window.addEventListener('routeChange', (params) => {
-      const { detail } = params;
-      if (detail.type === 'reLaunch') {
-        this.includeList = [];
-        this.reLaunch = true
-      }
-      this.destroy = detail.destroy
-      this.isForward = true;
-      setTimeout(() => (this.isForward = false), 300);
-    });
+    this.reLaunch = false;
+    this.addRouteChangeEvent();
+    this.addComponentDestroyEvent();
   },
 
   watch: {
@@ -153,6 +145,25 @@ export default {
       const keepAlive = to.meta.keepAlive
 
       return this.mode === 'allKeepAlive' || keepAlive ? name : '__' + name
+    },
+    addRouteChangeEvent() {
+      window.addEventListener('keep-routeChange', (params) => {
+        const { detail } = params;
+        if (detail.type === 'reLaunch') {
+          this.includeList = [];
+          this.reLaunch = true;
+        }
+        this.destroy = detail.destroy;
+        this.isForward = true;
+        setTimeout(() => (this.isForward = false), 300);
+      });
+    },
+    addComponentDestroyEvent() {
+      window.addEventListener('keep-componentDestroy', (params) => {
+        const { detail } = params;
+        this.destroy = detail;
+        this.handelDestroy(this.$route.name);
+      });
     }
   },
 };
