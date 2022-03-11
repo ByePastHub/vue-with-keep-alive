@@ -85,7 +85,7 @@
     var options = {
       detail: {}
     };
-    var routeTypeEvent = new CustomEvent('routeChange', options);
+    var routeTypeEvent = new CustomEvent('keep-routeChange', options);
     return {
       enhanceList: enhanceList,
       obj: obj,
@@ -202,24 +202,10 @@
       };
     },
     created: function created() {
-      var _this = this;
-
       this.isForward = false;
       this.reLaunch = false;
-      window.addEventListener('routeChange', function (params) {
-        var detail = params.detail;
-
-        if (detail.type === 'reLaunch') {
-          _this.includeList = [];
-          _this.reLaunch = true;
-        }
-
-        _this.destroy = detail.destroy;
-        _this.isForward = true;
-        setTimeout(function () {
-          return _this.isForward = false;
-        }, 300);
-      });
+      this.addRouteChangeEvent();
+      this.addComponentDestroyEvent();
     },
     watch: {
       $route: {
@@ -279,13 +265,13 @@
         this.asycnPush(name);
       },
       asycnPush: function asycnPush(name) {
-        var _this2 = this;
+        var _this = this;
 
         // 避免 Vue 数据更新合在一次队列中，导致数据没有发生变化，reLaunch 没有清掉跳转页面的 name
         var push = function push() {
-          if (_this2.includeList.includes(name)) return;
+          if (_this.includeList.includes(name)) return;
 
-          _this2.includeList.push(name);
+          _this.includeList.push(name);
         };
 
         if (Promise) {
@@ -341,14 +327,52 @@
         var name = to.name;
         var keepAlive = to.meta.keepAlive;
         return this.mode === 'allKeepAlive' || keepAlive ? name : '__' + name;
+      },
+      addRouteChangeEvent: function addRouteChangeEvent() {
+        var _this2 = this;
+
+        window.addEventListener('keep-routeChange', function (params) {
+          var detail = params.detail;
+
+          if (detail.type === 'reLaunch') {
+            _this2.includeList = [];
+            _this2.reLaunch = true;
+          }
+
+          _this2.destroy = detail.destroy;
+          _this2.isForward = true;
+          setTimeout(function () {
+            return _this2.isForward = false;
+          }, 300);
+        });
+      },
+      addComponentDestroyEvent: function addComponentDestroyEvent() {
+        var _this3 = this;
+
+        window.addEventListener('keep-componentDestroy', function (params) {
+          var detail = params.detail;
+          _this3.destroy = detail;
+
+          _this3.handelDestroy(_this3.$route.name);
+        });
       }
     }
   };
+
+  function destroy(value) {
+    var destroyEvent = new CustomEvent('keep-componentDestroy', {
+      detail: value
+    });
+    window.dispatchEvent(destroyEvent);
+  }
 
   var index = {
     install: function install(app, router) {
       withRouter(router);
       app.component('KeepRouterView', KeepRouterView);
+      app.prototype.$keepRouter = {
+        destroy: destroy
+      };
     }
   };
 
