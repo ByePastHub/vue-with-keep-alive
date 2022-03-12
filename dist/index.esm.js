@@ -35,7 +35,7 @@ function _asyncToGenerator(fn) {
 }
 
 function resetComponentsName(router, isChildren) {
-  var routes = isChildren ? router : router.getRoutes();
+  var routes = isChildren ? router : router.options.routes;
   routes.forEach(function (route) {
     var _route$components, _route$children;
 

@@ -1,5 +1,5 @@
 function resetComponentsName(router, isChildren) {
-  const routes = isChildren ? router : router.getRoutes();
+  const routes = isChildren ? router : router.options.routes;
   routes.forEach(function (route) {
     if (!route?.components?.default) return;
     if (route.children?.length > 0) {
