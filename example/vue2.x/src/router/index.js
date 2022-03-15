@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Page1 from "../views/Page1.vue";
-import Page2 from "../views/Page2.vue";
+const Page2 = () => import('../views/Page2.vue');
 import Page3 from "../views/Page3.vue";
 import Page4 from "../views/Page4.vue";
 import Page5 from "../views/Page5.vue";
