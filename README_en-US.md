@@ -18,6 +18,29 @@ Online Dome: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https:/
 `vue2.x` version install `npm install vue-with-keep-alive@2.x`</br>  
 `vue3.x` version install `npm install vue-with-keep-alive`
 
+#### Global registration component
+`KeepRouteView`
+
+**main.js**
+```js
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
+import withKeepAlive from 'vue-with-keep-alive'
+
+const app = createApp(App)
+app.use(router)
+app.use(withKeepAlive, router)
+app.mount("#app");
+```
+
+**App.vue**
+```vue
+<template>
+  <keep-router-view />
+</template>
+```
+
 **Component Properties**
 <table class="table table-bordered table-striped table-condensed">
   <tr>
@@ -50,29 +73,14 @@ Others (including system return) are all backwards, and the page component will 
 
 **In the router object above, add the `destroy` attribute (String|Array), which is used to customize the destroyed cached component**
 ```html
+<router-link :to="{ name: 'Page4', destroy: 'Page2'}">destroy Page2, to Page4</router-link>
 <button @click="() => $router.replace({name: 'Page4', destroy: 'Page2'})">destroy Page2, to Page4<button>
 <button @click="() => $router.push({name: 'Page4', destroy: ['Page2', 'Page3']})">destroy Page2、Page3, to Page4<button>
+<button @click="() => {
+  $router.push({name: 'Page4'})
+  $keepRouter.destroy('Page2')
+}">destroy Page2, to Page4<button>
 ```
 
-#### Global registration component
-`KeepRouteView`
-
-**main.js**
-```js
-import { createApp } from "vue";
-import App from "./App.vue";
-import router from "./router";
-import withKeepAlive from 'vue-with-keep-alive'
-
-const app = createApp(App)
-app.use(router)
-app.use(withKeepAlive, router)
-app.mount("#app");
-```
-
-**App.vue**
-```vue
-<template>
-  <keep-router-view />
-</template>
-```
+>**提示**<br/> 
+>If the jump page exists in `destroy`, it will clear the cache first, and then add itself

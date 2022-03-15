@@ -74,6 +74,7 @@ app.mount("#app");
 
 **上面router对象中，添加`destroy`属性(String|Array)，用做自定义销毁缓存过的组件**
 ```html
+<router-link :to="{ name: 'Page4', destroy: 'Page2'}">销毁 Page2, 跳转 Page4</router-link>
 <button @click="() => $router.replace({name: 'Page4', destroy: 'Page2'})">销毁 Page2, 跳转 Page4<button>
 <button @click="() => $router.push({name: 'Page4', destroy: ['Page2', 'Page3']})">销毁 Page2、Page3, 跳转 Page4<button>
 <button @click="() => {
