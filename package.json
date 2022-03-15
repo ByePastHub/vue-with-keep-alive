@@ -2,8 +2,8 @@
   "name": "vue-with-keep-alive",
   "version": "3.2.9",
   "description": "with keep-alive component",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/vue-with-keep-alive.cjs.js",
+  "module": "dist/vue-with-keep-alive.esm.js",
   "scripts": {
     "dev": "rollup -cw"
   },

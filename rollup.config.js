@@ -9,10 +9,10 @@ import cleanup from 'rollup-plugin-cleanup';
 export default {
   input: './src/index.js',
   output: [
-    { file: 'dist/index.cjs.js' },
+    { file: 'dist/vue-with-keep-alive.cjs.js' },
     // { file: "dist/index.cjs.min.js", plugins: [terser()] },
-    { file: 'dist/index.esm.js', format: 'esm' },
-    { file: 'dist/index.umd.js', format: 'umd', name: 'index' }
+    { file: 'dist/vue-with-keep-alive.esm.js', format: 'esm' },
+    { file: 'dist/vue-with-keep-alive.umd.js', format: 'umd', name: 'index' }
   ],
   plugins: [
     vue({
