@@ -1,4 +1,11 @@
 function resetComponentsName(router, isChildren) {
+  const routerVersion = router.constructor.version.replace(/\.(\d+)$/, '$1');
+
+  if (routerVersion < 3.5) {
+    console.error('vue-with-keep-alive: vue-router version is lower than 3.5.0, please upgrade vue-router');
+    return;
+  }
+
   const routes = isChildren ? router : router.getRoutes();
   routes.forEach(function(route) {
     if (!route?.components?.default) return;
@@ -7,11 +14,11 @@ function resetComponentsName(router, isChildren) {
     };
 
     if (typeof route.components.default === 'function') {
-      const originDefault = route.components.default;
+      const oldComponent = route.components.default;
       return (route.components.default = async() => {
-        const component = await originDefault();
-        component.default.name = route.name;
-        return component;
+        const newComponent = await oldComponent();
+        newComponent.default.name = route.name;
+        return newComponent;
       });
     };
     route.components.default.name = route.name;

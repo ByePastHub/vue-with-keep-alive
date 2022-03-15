@@ -542,6 +542,11 @@
   var regenerator = runtime.exports;
 
   function resetComponentsName(router, isChildren) {
+    var routerVersion = router.constructor.version.replace(/\.(\d+)$/, '$1');
+    if (routerVersion < 3.5) {
+      console.error('vue-with-keep-alive: vue-router version is lower than 3.5.0, please upgrade vue-router');
+      return;
+    }
     var routes = isChildren ? router : router.getRoutes();
     routes.forEach(function (route) {
       var _route$components, _route$children;
@@ -550,19 +555,19 @@
         resetComponentsName(route.children, true);
       }
       if (typeof route.components.default === 'function') {
-        var originDefault = route.components.default;
+        var oldComponent = route.components.default;
         return route.components.default = _asyncToGenerator( regenerator.mark(function _callee() {
-          var component;
+          var newComponent;
           return regenerator.wrap(function _callee$(_context) {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
                   _context.next = 2;
-                  return originDefault();
+                  return oldComponent();
                 case 2:
-                  component = _context.sent;
-                  component.default.name = route.name;
-                  return _context.abrupt("return", component);
+                  newComponent = _context.sent;
+                  newComponent.default.name = route.name;
+                  return _context.abrupt("return", newComponent);
                 case 5:
                 case "end":
                   return _context.stop();
