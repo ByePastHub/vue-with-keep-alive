@@ -536,6 +536,12 @@ try {
 var regenerator = runtime.exports;
 
 function resetComponentsName(router, isChildren) {
+  var _router$constructor$v;
+  var routerVersion = (_router$constructor$v = router.constructor.version) === null || _router$constructor$v === void 0 ? void 0 : _router$constructor$v.replace(/\.(\d+)$/, '$1');
+  if (routerVersion < 3.5) {
+    console.error('vue-with-keep-alive: vue-router version is lower than 3.5.0, please upgrade vue-router');
+    return;
+  }
   var routes = isChildren ? router : router.getRoutes();
   routes.forEach(function (route) {
     var _route$components, _route$children;
