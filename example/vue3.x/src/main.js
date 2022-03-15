@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import router from './router/index';
 import App from './App.vue';
-import withKeepAlive from '../../../dist/index.esm';
+import withKeepAlive from '../../../dist/vue-with-keep-alive.esm.js';
 // import withKeepAlive from 'vue-with-keep-alive';
 
 const app = createApp(App);

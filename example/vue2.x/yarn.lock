@@ -8439,7 +8439,7 @@
 
 "vue-router@^3.2.0":
   "integrity" "sha512-FUlILrW3DGitS2h+Xaw8aRNvGTwtuaxrRkNSHWTizOfLUie7wuYwezeZ50iflRn8YPV5kxmU2LQuu3nM/b3Zsg=="
-  "resolved" "https://registry.npmmirror.com/vue-router/download/vue-router-3.5.3.tgz"
+  "resolved" "https://registry.npmjs.org/vue-router/-/vue-router-3.5.3.tgz"
   "version" "3.5.3"
 
 "vue-style-loader@^4.1.0", "vue-style-loader@^4.1.2":
@@ -8464,9 +8464,9 @@
   "version" "1.9.1"
 
 "vue-with-keep-alive@^2.2.3":
-  "integrity" "sha512-sK5XMC6BVpkGgtWXEfyZ6XiGUw4Fjyw3qagTCdK7KD4IqVjZ/G3wZrlDdaNTp+kpA9u//t4U2uoX8hgS1RJb7w=="
-  "resolved" "https://registry.npmjs.org/vue-with-keep-alive/-/vue-with-keep-alive-2.2.3.tgz"
-  "version" "2.2.3"
+  "integrity" "sha512-dk2MNMakGm+GT0YCgdiibm2uhXtpqRJZbwE926YtFJwi89LDi9S+CAa02srF+MiHHPnTwOGve0so9F0TjnvzNg=="
+  "resolved" "https://registry.npmjs.org/vue-with-keep-alive/-/vue-with-keep-alive-2.2.8.tgz"
+  "version" "2.2.8"
   dependencies:
     "@vue/compiler-sfc" "^3.2.26"
 
