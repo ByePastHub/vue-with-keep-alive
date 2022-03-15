@@ -1,5 +1,5 @@
-import { render } from './render'
-import methods from './methods'
+import { render } from './render';
+import methods from './methods';
 
 export default {
   name: 'KeepRouteView',

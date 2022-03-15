@@ -1,6 +1,6 @@
 import withRouter from './withRouter';
 import KeepRouterView from './KeepRouterView';
-import { destroy } from './keepRouter'
+import { destroy } from './keepRouter';
 
 export { KeepRouterView, withRouter };
 export default {
