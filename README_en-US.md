@@ -73,6 +73,7 @@ Others (including system return) are all backwards, and the page component will 
 
 **In the router object above, add the `destroy` attribute (String|Array), which is used to customize the destroyed cached component**
 ```html
+<router-link :to="{ name: 'Page4', destroy: 'Page2'}">destroy Page2, to Page4</router-link>
 <button @click="() => $router.replace({name: 'Page4', destroy: 'Page2'})">destroy Page2, to Page4<button>
 <button @click="() => $router.push({name: 'Page4', destroy: ['Page2', 'Page3']})">destroy Page2、Page3, to Page4<button>
 <button @click="() => {
