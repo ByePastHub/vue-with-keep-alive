@@ -2,7 +2,7 @@ import withRouter from './withRouter';
 import KeepRouterView from './KeepRouterView';
 import { destroy } from './keepRouter';
 
-export { KeepRouterView, withRouter };
+export { KeepRouterView, withRouter, destroy };
 export default {
   install(app, router) {
     withRouter(router);

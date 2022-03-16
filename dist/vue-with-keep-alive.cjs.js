@@ -829,4 +829,4 @@ var index = {
   }
 };
 
-export { KeepRouterView, index as default, withRouter };
+export { KeepRouterView, index as default, destroy, withRouter };
