@@ -855,6 +855,7 @@
 
   exports.KeepRouterView = KeepRouterView;
   exports["default"] = index;
+  exports.destroy = destroy;
   exports.withRouter = withRouter;
 
   Object.defineProperty(exports, '__esModule', { value: true });

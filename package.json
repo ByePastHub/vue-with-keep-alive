@@ -1,6 +1,6 @@
 {
   "name": "vue-with-keep-alive",
-  "version": "2.2.9",
+  "version": "2.3.0",
   "description": "with keep-alive component",
   "main": "dist/vue-with-keep-alive.cjs.js",
   "module": "dist/vue-with-keep-alive.esm.js",
