@@ -1,5 +1,5 @@
-import { render } from './render'
-import methods from './methods'
+import { render } from './render';
+import methods from './methods';
 
 export default {
   name: 'KeepRouteView',
@@ -39,9 +39,9 @@ export default {
 
   created() {
     this.isForward = false;
-    this.reLaunch = false
-    this.addRouteChangeEvent()
-    this.addComponentDestroyEvent()
+    this.reLaunch = false;
+    this.addRouteChangeEvent();
+    this.addComponentDestroyEvent();
   },
 
   watch: {
