@@ -907,4 +907,4 @@ var index = {
   }
 };
 
-export { KeepRouterView, Vue, index as default, withRouter };
+export { KeepRouterView, Vue, index as default, destroy, withRouter };
