@@ -1,22 +1,51 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import Page1 from '../views/Page1.vue';
-const Page2 = () => import('../views/Page2.vue');
-import Page3 from '../views/Page3.vue';
-import Page4 from '../views/Page4.vue';
-import Page5 from '../views/Page5.vue';
+import handleDestroy from './handleDestroy';
 
 const routes = [
-  { path: '/', redirect: '/page1' },
-  { path: '/page1', name: 'Page1', component: Page1 },
-  { path: '/page2', name: 'Page2', component: Page2 },
-  { path: '/page3', name: 'Page3', component: Page3 },
-  { path: '/page4', name: 'Page4', component: Page4 },
-  { path: '/page5', name: 'Page5', component: Page5 }
+  {
+    path: '/',
+    redirect: {
+      name: 'user',
+    },
+  },
+  {
+    name: 'user',
+    path: '/user',
+    component: () => import('../views/user/index.vue'),
+    meta: {
+      title: '会员中心',
+    },
+  },
+  {
+    name: 'cart',
+    path: '/cart',
+    component: () => import('../views/cart/index.vue'),
+    meta: {
+      title: '购物车',
+    },
+  },
+  {
+    name: 'goods',
+    path: '/goods',
+    component: () => import('../views/goods/index.vue'),
+    meta: {
+      title: '商品详情',
+    },
+  },
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(),
   routes,
+  history: createWebHashHistory(),
+});
+
+router.beforeEach((to, from, next) => {
+  handleDestroy(to);
+  const title = to.meta && to.meta.title;
+  if (title) {
+    document.title = title;
+  }
+  next();
 });
 
 export default router;
