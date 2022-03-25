@@ -535,6 +535,12 @@ try {
 
 var regenerator = runtime.exports;
 
+var KEEP_BEFORE_ROUTE_CHANGE = 'KEEP_BEFORE_ROUTE_CHANGE';
+var KEEP_ROUTE_CHANGE = 'KEEP_ROUTE_CHANGE';
+var KEEP_COMPONENT_DESTROY = 'KEEP_COMPONENT_DESTROY';
+var RE_LAUNCH = 'reLaunch';
+var DESTROY_ALL = 'ALL';
+
 function resetComponentsName(router, isChildren) {
   var _router$constructor$v;
   var routerVersion = (_router$constructor$v = router.constructor.version) === null || _router$constructor$v === void 0 ? void 0 : _router$constructor$v.replace(/\.(\d+)$/, '$1');
@@ -575,17 +581,19 @@ function resetComponentsName(router, isChildren) {
   });
 }
 function getBaseOptions() {
-  var enhanceList = ['push', 'forward', 'replace', 'reLaunch'];
+  var enhanceList = ['push', 'forward', 'replace', RE_LAUNCH];
   var obj = Object.create(null);
   var options = {
     detail: {}
   };
-  var routeTypeEvent = new CustomEvent('keep-routeChange', options);
+  var beforeRouteTypeEvent = new CustomEvent(KEEP_BEFORE_ROUTE_CHANGE, options);
+  var routeTypeEvent = new CustomEvent(KEEP_ROUTE_CHANGE, options);
   return {
     enhanceList: enhanceList,
     obj: obj,
     options: options,
-    routeTypeEvent: routeTypeEvent
+    routeTypeEvent: routeTypeEvent,
+    beforeRouteTypeEvent: beforeRouteTypeEvent
   };
 }
 function withRouter(router) {
@@ -594,13 +602,14 @@ function withRouter(router) {
       enhanceList = _getBaseOptions.enhanceList,
       obj = _getBaseOptions.obj,
       options = _getBaseOptions.options,
-      routeTypeEvent = _getBaseOptions.routeTypeEvent;
+      routeTypeEvent = _getBaseOptions.routeTypeEvent,
+      beforeRouteTypeEvent = _getBaseOptions.beforeRouteTypeEvent;
   var historyPrototype = router.history.constructor.prototype;
   var routerPrototype = router.constructor.prototype;
-  routerPrototype.reLaunch = function (to) {
+  routerPrototype[RE_LAUNCH] = function (to) {
     return routerPrototype.replace(to);
   };
-  historyPrototype.reLaunch = function (to) {
+  historyPrototype[RE_LAUNCH] = function (to) {
     return historyPrototype.replace(to);
   };
   var routerObj = Object.create(null);
@@ -621,8 +630,13 @@ function withRouter(router) {
   function dispatch(obj, key, location, onComplete, onAbort) {
     options.detail.type = key;
     options.detail.destroy = location ? location.destroy : null;
+    window.dispatchEvent(beforeRouteTypeEvent);
     window.dispatchEvent(routeTypeEvent);
-    return obj[key].call(router.history, location, onComplete, onAbort);
+    return new Promise(function (resolve) {
+      setTimeout(function () {
+        resolve(obj[key].call(router.history, location, onComplete, onAbort));
+      }, 0);
+    });
   }
   return router;
 }
@@ -649,16 +663,10 @@ var methods = {
     } else {
       this.back(name);
     }
-    if (this.destroy) {
-      this.handelDestroy(name, 'addSelf');
-    }
     this.handleMatchClearList(to);
-    if (!this.reLaunch) {
-      if (this.includeList.length === 0) {
-        this.asycnPush(name);
-      }
+    if (this.includeList.length === 0) {
+      this.includeList.push(name);
     }
-    this.reLaunch = false;
   },
   forward: function forward(name) {
     var includeList = this.includeList;
@@ -669,13 +677,7 @@ var methods = {
     if (includeList.length === this.max) {
       includeList.splice(0, 1);
     }
-    if (this.reLaunch) {
-      this.asycnPush(name);
-    } else if (this.keepComponentDestroy && this.includeKeepComponentDestroy(name)) {
-      this.asycnPush(name);
-    } else {
-      includeList.push(name);
-    }
+    includeList.push(name);
   },
   back: function back(name) {
     if (this.includeList.length === 1) {
@@ -686,10 +688,8 @@ var methods = {
       this.includeList.splice(index + 1);
     }
   },
-  handelDestroy: function handelDestroy(name, mode) {
-    var _this = this;
-    var destroy = this.destroy,
-        destroyTraverse = this.destroyTraverse;
+  handelDestroy: function handelDestroy(destroy) {
+    var destroyTraverse = this.destroyTraverse;
     if (typeof destroy === 'string' && destroy) {
       destroyTraverse(destroy);
     } else if (Array.isArray(destroy)) {
@@ -697,11 +697,6 @@ var methods = {
         return destroyTraverse(name);
       });
     }
-    this.$nextTick(function () {
-      _this.keepComponentDestroy = null;
-    });
-    if (mode === 'clearSelf') return;
-    this.asycnPush(name);
   },
   handleMatchClearBehindList: function handleMatchClearBehindList(name) {
     if (this.matchClearBehindList.includes(name)) {
@@ -721,15 +716,6 @@ var methods = {
     var keepAlive = to.meta.keepAlive;
     return this.mode === 'allKeepAlive' || keepAlive ? name : '__' + name;
   },
-  includeKeepComponentDestroy: function includeKeepComponentDestroy(name) {
-    var keepComponentDestroy = this.keepComponentDestroy;
-    if (typeof keepComponentDestroy === 'string') {
-      return keepComponentDestroy === name;
-    } else if (Array.isArray(keepComponentDestroy)) {
-      return keepComponentDestroy.includes(name);
-    }
-    return false;
-  },
   destroyTraverse: function destroyTraverse(name) {
     var includeList = this.includeList;
     for (var i = 0; i < includeList.length; i++) {
@@ -739,40 +725,34 @@ var methods = {
       }
     }
   },
-  asycnPush: function asycnPush(name) {
-    var _this2 = this;
-    var push = function push() {
-      if (_this2.includeList.includes(name)) return;
-      _this2.includeList.push(name);
-    };
-    if (Promise) {
-      Promise.resolve().then(push);
-    } else {
-      setTimeout(push, 0);
-    }
+  addBeforeRouteChangeEvent: function addBeforeRouteChangeEvent() {
+    var _this = this;
+    window.addEventListener(KEEP_BEFORE_ROUTE_CHANGE, function (params) {
+      var detail = params.detail;
+      if (detail.type === RE_LAUNCH || detail.destroy === DESTROY_ALL) {
+        _this.includeList = [];
+      }
+      _this.handelDestroy(detail.destroy);
+    });
   },
   addRouteChangeEvent: function addRouteChangeEvent() {
-    var _this3 = this;
-    window.addEventListener('keep-routeChange', function (params) {
+    var _this2 = this;
+    window.addEventListener(KEEP_ROUTE_CHANGE, function (params) {
       var detail = params.detail;
-      if (detail.type === 'reLaunch') {
-        _this3.includeList = [];
-        _this3.reLaunch = true;
+      if (detail.type === RE_LAUNCH) {
+        _this2.includeList = [];
       }
-      _this3.destroy = detail.destroy;
-      _this3.isForward = true;
+      _this2.isForward = true;
       setTimeout(function () {
-        return _this3.isForward = false;
+        return _this2.isForward = false;
       }, 300);
     });
   },
   addComponentDestroyEvent: function addComponentDestroyEvent() {
-    var _this4 = this;
-    window.addEventListener('keep-componentDestroy', function (params) {
+    var _this3 = this;
+    window.addEventListener(KEEP_COMPONENT_DESTROY, function (params) {
       var detail = params.detail;
-      _this4.destroy = detail;
-      _this4.keepComponentDestroy = detail;
-      _this4.handelDestroy(_this4.$route.name, 'clearSelf');
+      _this3.handelDestroy(detail);
     });
   }
 };
@@ -794,7 +774,7 @@ var KeepRouterView = {
     matchClearList: {
       type: Array,
       default: function _default() {
-        return ['/'];
+        return [];
       }
     },
     matchClearBehindList: {
@@ -815,7 +795,7 @@ var KeepRouterView = {
   },
   created: function created() {
     this.isForward = false;
-    this.reLaunch = false;
+    this.addBeforeRouteChangeEvent();
     this.addRouteChangeEvent();
     this.addComponentDestroyEvent();
   },
@@ -831,7 +811,7 @@ var KeepRouterView = {
 };
 
 function destroy(value) {
-  var destroyEvent = new CustomEvent('keep-componentDestroy', {
+  var destroyEvent = new CustomEvent(KEEP_COMPONENT_DESTROY, {
     detail: value
   });
   window.dispatchEvent(destroyEvent);
