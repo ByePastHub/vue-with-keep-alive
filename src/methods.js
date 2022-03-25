@@ -1,3 +1,5 @@
+import { KEEP_BEFORE_ROUTE_CHANGE, KEEP_ROUTE_CHANGE, KEEP_COMPONENT_DESTROY, RE_LAUNCH, DESTROY_ALL } from './constants';
+
 export default {
   watchRoute(to) {
     const name = this.getRouteName(to);
@@ -7,16 +9,10 @@ export default {
     } else {
       this.back(name);
     }
-    if (this.destroy) {
-      this.handelDestroy(name, 'addSelf');
-    }
     this.handleMatchClearList(to);
-    if (!this.reLaunch) {
-      if (this.includeList.length === 0) {
-        this.asycnPush(name);
-      }
+    if (this.includeList.length === 0) {
+      this.includeList.push(name);
     }
-    this.reLaunch = false;
   },
   forward(name) {
     const { includeList } = this;
@@ -27,13 +23,7 @@ export default {
     if (includeList.length === this.max) {
       includeList.splice(0, 1);
     }
-    if (this.reLaunch) {
-      this.asycnPush(name);
-    } else if (this.keepComponentDestroy && this.includeKeepComponentDestroy(name)) {
-      this.asycnPush(name);
-    } else {
-      includeList.push(name);
-    }
+    includeList.push(name);
   },
   back(name) {
     if (this.includeList.length === 1) {
@@ -44,18 +34,13 @@ export default {
       this.includeList.splice(index + 1);
     }
   },
-  handelDestroy(name, mode) {
-    const { destroy, destroyTraverse } = this;
+  handelDestroy(destroy) {
+    const { destroyTraverse } = this;
     if (typeof destroy === 'string' && destroy) {
       destroyTraverse(destroy);
     } else if (Array.isArray(destroy)) {
       destroy.forEach(name => destroyTraverse(name));
     }
-    this.$nextTick(() => {
-      this.keepComponentDestroy = null;
-    });
-    if (mode === 'clearSelf') return;
-    this.asycnPush(name);
   },
   handleMatchClearBehindList(name) {
     if (this.matchClearBehindList.includes(name)) {
@@ -75,15 +60,6 @@ export default {
     const keepAlive = to.meta.keepAlive;
     return this.mode === 'allKeepAlive' || keepAlive ? name : '__' + name;
   },
-  includeKeepComponentDestroy(name) {
-    const { keepComponentDestroy } = this;
-    if (typeof keepComponentDestroy === 'string') {
-      return keepComponentDestroy === name;
-    } else if (Array.isArray(keepComponentDestroy)) {
-      return keepComponentDestroy.includes(name);
-    }
-    return false;
-  },
   destroyTraverse(name) {
     const { includeList } = this;
     for (let i = 0; i < includeList.length; i++) {
@@ -93,35 +69,29 @@ export default {
       }
     }
   },
-  asycnPush(name) {
-    const push = () => {
-      if (this.includeList.includes(name)) return;
-      this.includeList.push(name);
-    };
-    if (Promise) {
-      Promise.resolve().then(push);
-    } else {
-      setTimeout(push, 0);
-    }
+  addBeforeRouteChangeEvent() {
+    window.addEventListener(KEEP_BEFORE_ROUTE_CHANGE, (params) => {
+      const { detail } = params;
+      if (detail.type === RE_LAUNCH || detail.destroy === DESTROY_ALL) {
+        this.includeList = [];
+      }
+      this.handelDestroy(detail.destroy);
+    });
   },
   addRouteChangeEvent() {
-    window.addEventListener('keep-routeChange', (params) => {
+    window.addEventListener(KEEP_ROUTE_CHANGE, (params) => {
       const { detail } = params;
-      if (detail.type === 'reLaunch') {
+      if (detail.type === RE_LAUNCH) {
         this.includeList = [];
-        this.reLaunch = true;
       }
-      this.destroy = detail.destroy;
       this.isForward = true;
       setTimeout(() => (this.isForward = false), 300);
     });
   },
   addComponentDestroyEvent() {
-    window.addEventListener('keep-componentDestroy', (params) => {
+    window.addEventListener(KEEP_COMPONENT_DESTROY, (params) => {
       const { detail } = params;
-      this.destroy = detail;
-      this.keepComponentDestroy = detail;
-      this.handelDestroy(this.$route.name, 'clearSelf');
+      this.handelDestroy(detail);
     });
   }
 };

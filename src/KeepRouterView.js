@@ -22,7 +22,7 @@ export default {
     },
     matchClearList: {
       type: Array,
-      default: () => ['/'],
+      default: () => [],
     },
     matchClearBehindList: {
       type: Array,
@@ -41,8 +41,7 @@ export default {
   },
   created() {
     this.isForward = false;
-    this.reLaunch = false;
-    this.destroy = null;
+    this.addBeforeRouteChangeEvent();
     this.addRouteChangeEvent();
     this.addComponentDestroyEvent();
     _this = this;
