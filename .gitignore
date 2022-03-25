@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
-example
+example/vue2.x
+example/vue3.x
 src
 dist
 
