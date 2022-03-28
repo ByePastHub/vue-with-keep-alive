@@ -49,24 +49,24 @@
 
 <table class="table table-bordered table-striped table-condensed">
   <tr>
-    <td>mode</td>
+    <td>mode (String)</td>
 	  <td>模式：全部缓存(default) allKeepAlive，自定义缓存组件 customizeKeepAlive 需要在route设置中上meta: { keepAlive: true }</td>
   </tr>
   <tr>
-    <td>max</td>
+    <td>max (Number)</td>
 	  <td>页面最大缓存数量 (default: 5)</td>
   </tr>
   <tr>
-    <td>exclude</td>
+    <td>exclude (Array | String)</td>
 	  <td>字符串或正则表达式。任何名称匹配的组件都不会被缓存</td>
   </tr>
   <tr>
-    <td>matchClearList</td>
-	  <td>匹配到会除了当前页面的名称外，清空其他的页面名称</td>
+    <td>matchClearList (Array)</td>
+	  <td>匹配到名称时，除了当前页面的名称外，清空其他的页面名称</td>
   </tr>
   <tr>
-    <td>matchClearBehindList</td>
-	  <td>如果是后退，匹配到名称时，会把后面所以的名称剔除掉</td>
+    <td>matchClearBehindList (Array)</td>
+	  <td>如果是后退，匹配到名称时，会把后面所有的名称剔除掉</td>
   </tr>
 </table>
 

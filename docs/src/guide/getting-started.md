@@ -49,24 +49,24 @@
 
 <table class="table table-bordered table-striped table-condensed">
   <tr>
-    <td>mode</td>
-	  <td>Mode: all cache (default) allKeepAlive, custom cache component customizeKeepAlive needs to be meta in route settings: { keepAlive: true }</td>
+    <td>mode (String)</td>
+	  <td>Mode: all caches (default) allKeepAlive, custom cache component customizeKeepAlive needs to be set in the route settings meta: { keepAlive: true }</td>
   </tr>
   <tr>
-    <td>max</td>
+    <td>max (Number)</td>
 	  <td>Maximum number of pages to cache (default: 5)</td>
   </tr>
   <tr>
-    <td>exclude</td>
+    <td>exclude  (Array | String)</td>
 	  <td>String or regular expression. Any component whose name matches will not be cached</td>
   </tr>
   <tr>
-    <td>matchClearList</td>
-	  <td>Matching will clear other page names except the name of the current page</td>
+    <td>matchClearList (Array)</td>
+	  <td>When a name is matched, except the name of the current page, clear other page names</td>
   </tr>
   <tr>
-    <td>matchClearBehindList</td>
-	  <td>If it is backward, when the name is matched, the name behind it will be eliminated</td>
+    <td>matchClearBehindList (Array)</td>
+	  <td>If it is backward, when a name is matched, all subsequent names will be removed</td>
   </tr>
 </table>
 
