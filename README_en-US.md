@@ -11,8 +11,14 @@
 
 ### Install
 
+vue2.x
 ```
-yarn install vue-with-keep-alive
+npm install vue-with-keep-alive@2
+```
+
+vue3.x
+```
+npm install vue-with-keep-alive
 ```
 
 ## Get started quickly
