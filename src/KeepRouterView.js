@@ -18,7 +18,7 @@ export default {
     // 匹配到会除了当前页面的名称外，清空其他的页面名称
     matchClearList: {
       type: Array,
-      default: () => ['/'],
+      default: () => [],
     },
     // 如果是后退，匹配到名称时，会把后面所以的名称剔除掉
     matchClearBehindList: {
@@ -39,7 +39,7 @@ export default {
 
   created() {
     this.isForward = false;
-    this.reLaunch = false;
+    this.addBeforeRouteChangeEvent();
     this.addRouteChangeEvent();
     this.addComponentDestroyEvent();
   },
