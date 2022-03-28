@@ -1,4 +1,5 @@
-import { destroy } from "../../../../dist/vue-with-keep-alive.umd";
+import { destroy } from "vue-with-keep-alive";
+// import { destroy } from "../../../../dist/vue-with-keep-alive.umd";
 
 const pageMark = {
   goodsPageId: "",

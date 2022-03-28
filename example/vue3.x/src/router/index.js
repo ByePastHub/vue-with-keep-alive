@@ -11,7 +11,7 @@ const routes = [
   {
     name: 'user',
     path: '/user',
-    component: () => import('../view/user/index.vue'),
+    component: () => import('../views/user/index.vue'),
     meta: {
       title: '会员中心',
     },
@@ -19,7 +19,7 @@ const routes = [
   {
     name: 'cart',
     path: '/cart',
-    component: () => import('../view/cart/index.vue'),
+    component: () => import('../views/cart/index.vue'),
     meta: {
       title: '购物车',
     },
@@ -27,7 +27,7 @@ const routes = [
   {
     name: 'goods',
     path: '/goods',
-    component: () => import('../view/goods/index.vue'),
+    component: () => import('../views/goods/index.vue'),
     meta: {
       title: '商品详情',
     },

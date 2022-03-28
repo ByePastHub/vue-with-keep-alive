@@ -2,8 +2,8 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { Toast } from "vant";
-import withKeepAlive from "../../../dist/vue-with-keep-alive.umd";
-// import withKeepAlive from 'vue-with-keep-alive'
+// import withKeepAlive from "../../../dist/vue-with-keep-alive.umd";
+import withKeepAlive from "vue-with-keep-alive";
 
 Vue.config.productionTip = false;
 
