@@ -1,9 +1,5 @@
 .DS_Store
 node_modules
-example/vue2.x
-example/vue3.x
-src
-dist
 
 # local env files
 .env.local
