@@ -17,5 +17,6 @@ yarn install vue-with-keep-alive
 
 ## 快速上手
 
-在线文档: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https://byepasthub.github.io/vue-with-keep-alive/</a></br>  
+在线文档: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https://byepasthub.github.io/vue-with-keep-alive/zh/</a></br>  
 在线示例: <a href="https://byepasthub.github.io/vue-with-keep-alive/example">https://byepasthub.github.io/vue-with-keep-alive/example</a>
+

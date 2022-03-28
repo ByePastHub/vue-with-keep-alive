@@ -1,21 +1,21 @@
 # vue-with-keep-alive
 
-## 介绍
+## introduce
 
->`vue-with-keep-alive`可以帮助你实现前进刷新，返回时之前的页面还处于激活的状态，可以像`app`一样的体验。哪里需要缓存，把`router-view`组件使用`keep-router-view`来替换。
+>`vue-with-keep-alive` can help you achieve forward refresh, the previous page is still active when you return, and you can experience the same as `app`. Where caching is needed, replace the `router-view` component with `keep-router-view`.
 
 ## language
 
 <a href="./README.md">中文</a></br>  
-<a href="./README_en-US.md">English</a>
+<a href="./README_en-US.md">English</a></br>
 
-### 安装
+### Install
 
 ```
 yarn install vue-with-keep-alive
 ```
 
-## 快速上手
+## Get started quickly
 
-在线文档: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https://byepasthub.github.io/vue-with-keep-alive/</a></br>  
-在线示例: <a href="https://byepasthub.github.io/vue-with-keep-alive/example">https://byepasthub.github.io/vue-with-keep-alive/example</a>
+online docs: <a href="https://byepasthub.github.io/vue-with-keep-alive/">https://byepasthub.github.io/vue-with-keep-alive/</a></br>  
+online example: <a href="https://byepasthub.github.io/vue-with-keep-alive/example">https://byepasthub.github.io/vue-with-keep-alive/example</a>
