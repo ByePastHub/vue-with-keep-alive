@@ -75,7 +75,7 @@ export default defineUserConfig<DefaultThemeOptions>({
   themeConfig: {
     logo: '/images/hero.png',
 
-    repo: 'vuepress/vuepress-next',
+    repo: 'ByePastHub/vue-with-keep-alive',
 
     docsDir: 'docs',
 
