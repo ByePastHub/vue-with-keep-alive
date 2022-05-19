@@ -71,11 +71,12 @@ export default {
   },
   addBeforeRouteChangeEvent() {
     window.addEventListener(KEEP_BEFORE_ROUTE_CHANGE, (params) => {
-      const { detail } = params;
-      if (detail.type === RE_LAUNCH || detail.destroy === DESTROY_ALL) {
+      const { detail: { type, destroy, toLocation }} = params;
+      // this.destroyTraverse(toLocation.name);
+      if (type === RE_LAUNCH || destroy === DESTROY_ALL) {
         this.includeList = [];
       }
-      this.handelDestroy(detail.destroy);
+      this.handelDestroy(destroy);
     });
   },
   addRouteChangeEvent() {

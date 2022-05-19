@@ -73,10 +73,13 @@ function withRouter2x(router) {
 function withRouter3x(router) {
   const { enhanceList, obj, options, routeTypeEvent, beforeRouteTypeEvent } = getBaseOptions();
   router[RE_LAUNCH] = (to) => router.replace(to);
+
   enhanceList.forEach((key) => {
     obj[key] = router[key];
     router[key] = (to) => {
+      const toLocation = router.resolve(to);
       options.detail.type = key;
+      options.detail.toLocation = toLocation;
       options.detail.destroy = to ? to.destroy : null;
       window.dispatchEvent(beforeRouteTypeEvent);
       window.dispatchEvent(routeTypeEvent);
