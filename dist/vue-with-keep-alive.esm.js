@@ -653,13 +653,31 @@ function withRouter3x(router) {
   };
   enhanceList.forEach(function (key) {
     obj[key] = router[key];
-    router[key] = function (to) {
-      options.detail.type = key;
-      options.detail.destroy = to ? to.destroy : null;
-      window.dispatchEvent(beforeRouteTypeEvent);
-      window.dispatchEvent(routeTypeEvent);
-      return obj[key](to);
-    };
+    router[key] = function () {
+      var _ref2 = _asyncToGenerator( regenerator.mark(function _callee2(to) {
+        var toLocation;
+        return regenerator.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                toLocation = router.resolve(to);
+                options.detail.type = key;
+                options.detail.toLocation = toLocation;
+                options.detail.destroy = to ? to.destroy : null;
+                window.dispatchEvent(beforeRouteTypeEvent);
+                window.dispatchEvent(routeTypeEvent);
+                return _context2.abrupt("return", obj[key](to));
+              case 7:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }));
+      return function (_x) {
+        return _ref2.apply(this, arguments);
+      };
+    }();
   });
 }
 var withRouter = (function (router) {
@@ -671,24 +689,24 @@ var withRouter = (function (router) {
 });
 
 function render2x() {
-  var _vm = this;
-  var _h = _vm.$createElement;
-  var _c = _vm._self._c || _h;
-  return _c('keep-alive', {
+  var vm = this;
+  var h = vm.$createElement;
+  var c = vm._self.c || h;
+  return c('keep-alive', {
     attrs: {
-      include: [].concat(_vm.includeList),
-      max: _vm.max,
-      exclude: _vm.exclude
+      include: [].concat(vm.includeList),
+      max: vm.max,
+      exclude: vm.exclude
     }
-  }, [_c('router-view')], 1);
+  }, [c('router-view')], 1);
 }
-function render3x(_ctx, _cache, $props, $setup, $data) {
-  var _component_router_view = resolveComponent('router-view');
-  return openBlock(), createBlock(_component_router_view, {
+function render3x(ctx, cache, $props, $setup, $data) {
+  var componentRouterView = resolveComponent('router-view');
+  return openBlock(), createBlock(componentRouterView, {
     key: 0
   }, {
-    default: withCtx(function (_ref) {
-      var Component = _ref.Component;
+    default: withCtx(function (ref) {
+      var Component = ref.Component;
       return [(openBlock(), createBlock(KeepAlive, {
         include: $data.includeList,
         max: $props.max,
@@ -773,11 +791,15 @@ var methods = {
   addBeforeRouteChangeEvent: function addBeforeRouteChangeEvent() {
     var _this = this;
     window.addEventListener(KEEP_BEFORE_ROUTE_CHANGE, function (params) {
-      var detail = params.detail;
-      if (detail.type === RE_LAUNCH || detail.destroy === DESTROY_ALL) {
+      var _params$detail = params.detail,
+          type = _params$detail.type,
+          destroy = _params$detail.destroy,
+          toLocation = _params$detail.toLocation;
+      _this.destroyTraverse(toLocation.name);
+      if (type === RE_LAUNCH || destroy === DESTROY_ALL) {
         _this.includeList = [];
       }
-      _this.handelDestroy(detail.destroy);
+      _this.handelDestroy(destroy);
     });
   },
   addRouteChangeEvent: function addRouteChangeEvent() {

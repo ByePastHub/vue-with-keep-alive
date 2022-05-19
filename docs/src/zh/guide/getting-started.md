@@ -41,7 +41,7 @@
 **App.vue**
 ```vue
 <template>
-  <keep-router-riew />
+  <keep-router-view />
 </template>
 ```
 
