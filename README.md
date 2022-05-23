@@ -1,4 +1,5 @@
 # 不在维护，后面会重写一个更容易配置的版本，不过不叫这个名称了，名称换成`vue-keep-router-view`
+## `vue-keep-router-view`估计正式版，会在6月中会上`npm`
 
 ## vue-with-keep-alive
 
