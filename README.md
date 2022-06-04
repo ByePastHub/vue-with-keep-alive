@@ -1,4 +1,4 @@
-# 不在维护，已经重写一个更容易配置的版本，更完善的版本，名称换成<a href="https://byepasthub.github.io/vue-keep">vue-keep</a></br>  
+# 不在维护，已经重写一个更容易配置的版本，更完善的版本，名称换成<a href="https://byepasthub.github.io/vue-keep/zh">vue-keep</a></br>  
 
 ## vue-with-keep-alive
 
