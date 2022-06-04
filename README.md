@@ -1,5 +1,4 @@
-# 不在维护，后面会重写一个更容易配置的版本，不过不叫这个名称了，名称换成`vue-keep-router-view`
-## 预计`vue-keep-router-view`正式版，会在6月中会上`npm`，目前正在构思如何才可以零配置使用，跟普通app一样，但同时也存在更灵活的的自定义是否销毁，把主动权交到开发者手中
+# 不在维护，已经重写一个更容易配置的版本，更完善的版本，名称换成<a href="https://byepasthub.github.io/vue-keep">vue-keep</a></br>  
 
 ## vue-with-keep-alive
 
