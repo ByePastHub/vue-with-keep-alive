@@ -1,4 +1,4 @@
-# vue-with-keep-alive
+# vue-with-keep-alive 不再维护，请使用@bye_past/vue-keep替换
 
 ## 介绍
 
