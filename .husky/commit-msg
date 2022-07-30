@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+commit_regex='^Merge.+|(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|merge|release)(\(.+\))?: .{1,50}'
+
+if ! grep -iqE "$commit_regex" "$1"; then
+  echo
+  if [ `uname` == 'Darwin' ] || [ `uname` == 'Linux' ];
+    then
+      echo "  \033[31m 错误：提交日志生成需要正确的提交消息格式。 \033[0m"
+    else
+      echo "  错误：提交日志生成需要正确的提交消息格式。"
+  fi
+  echo
+  if [ `uname` == 'Darwin' ] || [ `uname` == 'Linux' ];
+    then
+      echo "  使用\033[32m \`npm run commit\`\033[0m 以交互方式生成提交消息。"
+      echo "  或者使用\033[32m 全局安装\`npm i commitizen -g\`\033[0m，可以通过\033[32m \`cz\`\033[0m进行提交"
+    else
+      echo "  使用 \`npm run commit\` 以交互方式生成提交消息。"
+      echo "  或者使用全局安装\`npm i commitizen -g\`，可以通过\`cz\`进行提交"
+  fi
+  echo "  - 有关更多详细信息，请参阅 cz.config.js"
+  echo
+  exit 1
+fi

@@ -1,6 +1,6 @@
 import babel from 'rollup-plugin-babel';
 import resolve from '@rollup/plugin-node-resolve';
-import vue from 'rollup-plugin-vue';
+// import vue from 'rollup-plugin-vue';
 // import vue2 from 'rollup-plugin-vue2';
 import commonjs from '@rollup/plugin-commonjs';
 import { eslint } from 'rollup-plugin-eslint';
@@ -15,10 +15,10 @@ export default {
     { file: 'dist/vue-with-keep-alive.umd.js', format: 'umd', name: 'index' }
   ],
   plugins: [
-    vue({
-      css: true,
-      compileTemplate: true
-    }),
+    // vue({
+    //   css: true,
+    //   compileTemplate: true
+    // }),
     eslint({}),
     // vue2({
     //   css: true,
@@ -46,7 +46,7 @@ export default {
       'plugins': [
         ['@babel/plugin-transform-runtime', {
           regenerator: true,
-          absoluteRuntime: false,
+          absoluteRuntime: true,
           useESModules: false,
         }]
       ]
