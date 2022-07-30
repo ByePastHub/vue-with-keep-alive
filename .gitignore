@@ -20,3 +20,5 @@ package-lock.json
 *.njsproj
 *.sln
 *.sw?
+
+example/vue3-ts/
